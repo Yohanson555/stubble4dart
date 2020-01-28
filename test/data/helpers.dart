@@ -1,4 +1,4 @@
-import 'package:stubble/stubble/stubble.dart';
+import 'package:stubble/stubble/Stubble.dart';
 
 Stubble initHelpers() {
   final s = Stubble();
@@ -11,6 +11,10 @@ Stubble initHelpers() {
     });
 
     return 'Helper executed sucessfuly';
+  });
+
+  s.registerHelper('show', (List attrs, Function fn) {
+    return attrs.toString();
   });
 
   s.registerHelper('blockHelper', (List attrs, Function fn) {
