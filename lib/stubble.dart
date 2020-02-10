@@ -5,7 +5,6 @@ import 'package:meta/meta.dart';
 part './src/Characters.dart';
 part './src/Errors.dart';
 part './src/Notify.dart';
-part './src/States.dart';
 part './src/StubbleContext.dart';
 part './src/StubbleError.dart';
 part './src/StubbleMachine.dart';
@@ -34,14 +33,16 @@ part './src/states/GetBlockSequenceTypeState.dart';
 part './src/states/GetBlockNameState.dart';
 
 class Stubble {
-  Map<String, Function(List<dynamic>, Function)> _helpers = {};
-  Map<String, dynamic> _options = {
+  final Map<String, Function(List<dynamic>, Function)> _helpers = {};
+  final Map<String, dynamic> _options = {
     'ignoreUnregisteredHelperErrors': false,
     'ignoreTagCaseSensetive': false
   };
 
   Stubble([Map<String, dynamic> options, Map<String, Function(List<dynamic>, Function)> helpers]) {
-    _helpers = helpers ?? {};
+    if (helpers != null) {
+      _helpers.addAll(helpers);
+    }
 
     if (options != null) {
       _options.addAll(options);
@@ -106,7 +107,7 @@ class Stubble {
 
   /// removes all helpers from Stubble
   bool dropHelpers() {
-    _helpers = {};
+    _helpers.clear();
 
     return true;
   }

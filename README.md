@@ -1,4 +1,4 @@
-# Stubble ![Coverage](https://raw.githubusercontent.com/Yohanson555/stubble4dart/master/coverage_badge.svg?sanitize=true)
+# Stubble for Dart ![Coverage](https://raw.githubusercontent.com/Yohanson555/stubble4dart/master/coverage_badge.svg?sanitize=true)
 
 ### Overview
 

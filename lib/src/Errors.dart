@@ -1,5 +1,7 @@
 part of stubble;
 
+/// types of errors
+
 const ERROR_CHAR_NOT_A_OPEN_BRACKET = 1;
 const ERROR_CHAR_NOT_A_CLOSE_BRACKET = 2;
 const ERROR_NOT_A_VALID_BLOCK_NAME_CHAR = 3;

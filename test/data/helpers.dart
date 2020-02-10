@@ -38,7 +38,7 @@ Stubble initHelpers() {
 
   s.registerHelper('total_sum', (List attrs, Function fn) {
     final List items = attrs.first;
-    double sum = 0;
+    var sum = 0.0;
 
     if (items != null && items.isNotEmpty) {
       items.forEach((item) {

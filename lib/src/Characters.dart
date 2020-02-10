@@ -1,5 +1,7 @@
 part of stubble;
 
+/// code of special characters
+
 const BACK_SLASH = 92; // \
 const SLASH = 47; // /
 const ENTER = 10; // '\n'
@@ -13,7 +15,6 @@ const DOT = 46; // .
 const QUOTE = 34; // "
 const SINGLE_QUOTE = 39; // '
 const EOS = -1; // '
-
 const MORE = 62; // >
 const LESS = 60; // <
 const EQUAL = 61; // =

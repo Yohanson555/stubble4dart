@@ -20,7 +20,7 @@ void main() {
     });
 
     test('Creating a stubble machine with empty template', () {
-      var sm = new StubbleMachine(null);
+      var sm = StubbleMachine(null);
 
       expect(sm.run(null), '');
     });
@@ -182,7 +182,7 @@ void main() {
     });
 
     test('Calling existing helper', () {
-      final Map<String, Function(List<dynamic>, Function)> helpers = {};
+      final helpers = <String, Function(List<dynamic>, Function)>{};
 
       helpers['simple'] = (List attrs, Function fn) {
         return 'Helper result';
@@ -194,7 +194,7 @@ void main() {
     });
 
     test('Calling existing helper with attributes #1', () {
-      final Map<String, Function(List<dynamic>, Function)> helpers = {};
+      final helpers = <String, Function(List<dynamic>, Function)>{};
 
       helpers['simple'] = (List attrs, Function fn) {
         return 'Number of attributes is ${attrs.length}';
@@ -207,7 +207,7 @@ void main() {
     });
 
     test('Calling existing helper with attributes #2', () {
-      final Map<String, Function(List<dynamic>, Function)> helpers = {};
+      final helpers = <String, Function(List<dynamic>, Function)> {};
 
       helpers['simple'] = (List attrs, Function fn) {
         return 'Second attribute is ${attrs[1]}';
@@ -234,7 +234,7 @@ void main() {
     });
 
     test('Calling non-existing helper', () {
-      final Map<String, Function(List<dynamic>, Function)> helpers = {};
+      final helpers = <String, Function(List<dynamic>, Function)>{};
       final context = StubbleContext(null, helpers);
 
       expect(
@@ -649,7 +649,7 @@ void main() {
       var res = '';
 
       for (var i = 0; i < count; i++) {
-        res += fn({"index": i + 1, "multy": multy}) + ';';
+        res += fn({'index': i + 1, 'multy': multy}) + ';';
       }
 
       return res;

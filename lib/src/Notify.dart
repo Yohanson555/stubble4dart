@@ -1,5 +1,7 @@
 part of stubble;
 
+/// types of notify messages
+
 const NOTIFY_SECOND_OPEN_BRACKET_FOUND = 1;
 const NOTIFY_SECOND_CLOSE_BRACKET_FOUND = 2;
 const NOTIFY_IS_HELPER_SEQUENCE = 3;

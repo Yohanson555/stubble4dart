@@ -11,6 +11,7 @@ class StubbleMachine {
     _template = tpl;
   }
 
+  /// Launching machine with a given StubbleContext
   String run(StubbleContext context) {
     _stack = [];
     _stack.add(RootState());
@@ -33,15 +34,15 @@ class StubbleMachine {
           context.symbol = _symbol;
           context.line = _line;
 
-          process(ProcessMessage(charCode: charCode), context);
+          _process(ProcessMessage(charCode: charCode), context);
         }
 
         if (l < lines.length - 1) {
-          process(ProcessMessage(charCode: ENTER), context);
+          _process(ProcessMessage(charCode: ENTER), context);
         }
       }
 
-      process(ProcessMessage(charCode: EOS), context);
+      _process(ProcessMessage(charCode: EOS), context);
 
       if (!(_stack.last is RootState)) {
         throw Exception(
@@ -52,19 +53,21 @@ class StubbleMachine {
     return _res;
   }
 
-  void process(StubbleMessage msg, StubbleContext context) {
+  /// Processing machine message
+  void _process(StubbleMessage msg, StubbleContext context) {
     final state = _stack.last;
 
     if (state != null && state.canAcceptMessage(msg)) {
       final res = state.processMessage(msg, context);
 
       if (res != null) {
-        processResult(res, context);
+        _processResult(res, context);
       }
     }
   }
 
-  void processResult(StubbleResult r, StubbleContext context) {
+  /// Processing message result
+  void _processResult(StubbleResult r, StubbleContext context) {
     if (r.result != null) {
       _res += r.result;
     }
@@ -78,7 +81,7 @@ class StubbleMachine {
     }
 
     if (r.message != null) {
-      process(r.message, context);
+      _process(r.message, context);
     }
 
     if (r.err != null) {
@@ -95,6 +98,7 @@ class StubbleMachine {
     }
   }
 
+  /// Pops top state from stack
   void pop() {
     _stack.removeLast();
   }

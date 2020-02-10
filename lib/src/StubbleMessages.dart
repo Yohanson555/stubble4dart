@@ -1,5 +1,7 @@
 part of stubble;
 
+/// StateMachine processes messages of different types.
+
 abstract class StubbleMessage {
   String getName();
 }

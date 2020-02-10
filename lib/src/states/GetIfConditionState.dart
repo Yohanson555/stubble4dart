@@ -104,6 +104,8 @@ class GetIfConditionState extends StubbleState {
                 text:
                     'State "$runtimeType" does not support notifies of type ${msg.type}'));
     }
+
+    return null;
   }
 
   bool checkCondition() {

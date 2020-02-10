@@ -61,6 +61,8 @@ class GetWithBlockState extends StubbleState {
         _body = msg.value;
         return result(context);
     }
+
+    return null;
   }
 
   StubbleResult result(StubbleContext context) {
