@@ -1,4 +1,4 @@
-# Stubble ![Coverage](https://raw.githubusercontent.com/{you}/{repo}/master/coverage_badge.svg?sanitize=true)
+# Stubble ![Coverage](https://raw.githubusercontent.com/Yohanson555/stubble4dart/master/coverage_badge.svg?sanitize=true)
 
 ### Overview
 
