@@ -20,7 +20,7 @@ class StubbleMachine {
       final lines = _template.split('\n');
 
       for (var l = 0; l < lines.length; l++) {
-        _line = l;
+        _line = l + 1;
         final line = lines[l];
 
         for (var i = 0; i < line.length; i++) {
@@ -30,6 +30,9 @@ class StubbleMachine {
 
           //print("char: ${line[i]}");
 
+          context.symbol = _symbol;
+          context.line = _line;
+
           process(ProcessMessage(charCode: charCode), context);
         }
 
@@ -37,6 +40,8 @@ class StubbleMachine {
           process(ProcessMessage(charCode: ENTER), context);
         }
       }
+
+      process(ProcessMessage(charCode: EOS), context);
 
       if (!(_stack.last is RootState)) {
         throw Exception(
@@ -77,19 +82,20 @@ class StubbleMachine {
     }
 
     if (r.err != null) {
-      final e = 'Error (${r.err.code}) on $currentLine:$_symbol ${r.err.text}';
+      if (context.opt('ignoreUnregisteredHelperErrors') == true &&
+          r.err.code == ERROR_HELPER_UNREGISTERED) {
+        print('Warning: ${r.err}');
+      } else {
+        final e = 'Error (${r.err.code}) on $_line:$_symbol ${r.err.text}';
 
-      print(e);
+        print(e);
 
-      throw Exception(e);
+        throw Exception(e);
+      }
     }
   }
 
   void pop() {
     _stack.removeLast();
-  }
-
-  int get currentLine {
-    return _line + 1;
   }
 }

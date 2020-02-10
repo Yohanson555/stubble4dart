@@ -3,10 +3,12 @@ part of stubble;
 class GetBlockHelperState extends StubbleState {
   final String helper;
   final List<dynamic> _attributes = [];
+  final symbol;
+  final line;
 
   String _body = '';
 
-  GetBlockHelperState({@required this.helper}) {
+  GetBlockHelperState({@required this.helper, this.symbol, this.line}) {
     methods = {
       'process': (msg, context) => process(msg, context),
       'notify': (msg, context) => notify(msg, context),
@@ -16,7 +18,12 @@ class GetBlockHelperState extends StubbleState {
   StubbleResult process(ProcessMessage msg, StubbleContext context) {
     final charCode = msg.charCode;
 
-    if (charCode == CLOSE_BRACKET) {
+    if (charCode == EOS) {
+      return StubbleResult(
+          err: StubbleError(
+              code: ERROR_UNTERMINATED_BLOCK,
+              text: 'Unterminated block helper "$helper" at $line:$symbol'));
+    } else if (charCode == CLOSE_BRACKET) {
       return StubbleResult(state: CloseBracketState());
     } else if (charCode == SPACE) {
       return null;
@@ -30,19 +37,31 @@ class GetBlockHelperState extends StubbleState {
   StubbleResult notify(NotifyMessage msg, StubbleContext context) {
     switch (msg.type) {
       case NOTIFY_SECOND_CLOSE_BRACKET_FOUND:
-        return StubbleResult(state: GetBlockEndState(blockName: helper));
+        return StubbleResult(
+          state: GetBlockEndState(
+            blockName: helper,
+          ),
+        );
+
       case NOTIFY_ATTR_RESULT:
         _attributes.add(msg.value);
 
         if (msg.charCode != null) {
-          return StubbleResult(message: ProcessMessage(charCode: msg.charCode));
+          return StubbleResult(
+            message: ProcessMessage(
+              charCode: msg.charCode,
+            ),
+          );
         }
 
         break;
+
       case NOTIFY_BLOCK_END_RESULT:
         _body = msg.value;
+
         return result(context);
         break;
+
       default:
         break;
     }
@@ -51,6 +70,15 @@ class GetBlockHelperState extends StubbleState {
   }
 
   StubbleResult result(StubbleContext context) {
+    if (!context.callable(helper)) {
+      return StubbleResult(
+        err: StubbleError(
+          code: ERROR_HELPER_UNREGISTERED,
+          text: 'Helper "$helper" is unregistered',
+        ),
+      );
+    }
+
     final result = StubbleResult();
 
     try {
@@ -61,7 +89,10 @@ class GetBlockHelperState extends StubbleState {
       result.result = context.call(helper, _attributes, context.compile(_body));
       result.pop = true;
     } catch (e) {
-      result.err = StubbleError(text: e.toString(), code: ERROR_CALLING_HELPER);
+      result.err = StubbleError(
+        text: 'Helper "${helper}" error: ${e.toString()}',
+        code: ERROR_CALLING_HELPER,
+      );
     }
 
     return result;

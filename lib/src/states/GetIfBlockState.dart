@@ -1,10 +1,13 @@
 part of stubble;
 
 class GetIfBlockState extends StubbleState {
+  final int symbol;
+  final int line;
+
   bool _res = false;
   String _body;
 
-  GetIfBlockState() {
+  GetIfBlockState({this.symbol, this.line}) {
     methods = {
       'process': (msg, context) => process(msg, context),
       'notify': (msg, context) => notify(msg, context),
@@ -14,10 +17,17 @@ class GetIfBlockState extends StubbleState {
   StubbleResult process(ProcessMessage msg, StubbleContext context) {
     final charCode = msg.charCode;
 
-    if (charCode == SPACE) {
+    if (charCode == EOS) {
+      return StubbleResult(
+          err: StubbleError(
+              code: ERROR_UNTERMINATED_BLOCK,
+              text: 'Unterminated "IF" block at $line:$symbol'));
+    } else if (charCode == SPACE) {
       return null;
     } else if (charCode == CLOSE_BRACKET) {
-      return StubbleResult(state: CloseBracketState());
+      return StubbleResult(
+        state: CloseBracketState(),
+      );
     }
 
     return StubbleResult(
@@ -32,12 +42,20 @@ class GetIfBlockState extends StubbleState {
         _res = msg.value ?? false;
 
         if (msg.charCode != null) {
-          return StubbleResult(message: ProcessMessage(charCode: msg.charCode));
+          return StubbleResult(
+            message: ProcessMessage(
+              charCode: msg.charCode,
+            ),
+          );
         }
 
         break;
       case NOTIFY_SECOND_CLOSE_BRACKET_FOUND:
-        return StubbleResult(state: GetBlockEndState(blockName: 'if'));
+        return StubbleResult(
+          state: GetBlockEndState(
+            blockName: 'if',
+          ),
+        );
 
       case NOTIFY_BLOCK_END_RESULT:
         _body = msg.value;
@@ -45,11 +63,15 @@ class GetIfBlockState extends StubbleState {
 
       default:
         return StubbleResult(
-            err: StubbleError(
-                code: ERROR_UNSUPPORTED_NOTIFY,
-                text:
-                    'State "$runtimeType" does not support notifies of type ${msg.type}'));
+          err: StubbleError(
+            code: ERROR_UNSUPPORTED_NOTIFY,
+            text:
+                'State "$runtimeType" does not support notifies of type ${msg.type}',
+          ),
+        );
     }
+
+    return null;
   }
 
   StubbleResult result(StubbleContext context) {

@@ -10,7 +10,13 @@ class GetConditionState extends StubbleState {
   StubbleResult process(ProcessMessage msg, StubbleContext context) {
     final charCode = msg.charCode;
 
-    if (charCode == MORE ||
+    if (charCode == EOS) {
+      return StubbleResult(
+          err: StubbleError(
+              code: ERROR_UNEXPECTED_END_OF_SOURCE,
+              text: 'IF condition error: unexpected end of source')
+      );
+    } else if (charCode == MORE ||
         charCode == LESS ||
         charCode == EQUAL ||
         charCode == EXCL_MARK) {

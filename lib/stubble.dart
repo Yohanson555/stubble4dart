@@ -34,10 +34,18 @@ part './src/states/GetBlockSequenceTypeState.dart';
 part './src/states/GetBlockNameState.dart';
 
 class Stubble {
-  Map<String, Function(List<dynamic>, Function)> helpers = {};
+  Map<String, Function(List<dynamic>, Function)> _helpers = {};
+  Map<String, dynamic> _options = {
+    'ignoreUnregisteredHelperErrors': false,
+    'ignoreTagCaseSensetive': false
+  };
 
-  Stubble({this.helpers}) {
-    helpers ??= {};
+  Stubble([Map<String, dynamic> options, Map<String, Function(List<dynamic>, Function)> helpers]) {
+    _helpers = helpers ?? {};
+
+    if (options != null) {
+      _options.addAll(options);
+    }
   }
 
   /// returns a compiler function that starts StubbleMachine with given template on call
@@ -49,7 +57,7 @@ class Stubble {
     final machine = StubbleMachine(template);
 
     return (Map data) {
-      final context = StubbleContext(data, helpers, (String tpl) => compile(tpl));
+      final context = StubbleContext(data, _helpers, _options, (String tpl) => compile(tpl));
 
       final result = machine.run(context);
 
@@ -78,8 +86,8 @@ class Stubble {
       throw Exception('Helper\'s function should be provided');
     }
 
-    if (!helpers.containsKey(name)) {
-      helpers[name] = helper;
+    if (!_helpers.containsKey(name)) {
+      _helpers[name] = helper;
       return true;
     }
 
@@ -88,8 +96,8 @@ class Stubble {
 
   /// removes a helper function with a given name
   bool removeHelper(String name) {
-    if (helpers.containsKey(name)) {
-      helpers.remove(name);
+    if (_helpers.containsKey(name)) {
+      _helpers.remove(name);
       return true;
     }
 
@@ -98,12 +106,16 @@ class Stubble {
 
   /// removes all helpers from Stubble
   bool dropHelpers() {
-    helpers = {};
+    _helpers = {};
 
     return true;
   }
 
   int get helperCount {
-    return helpers != null ? helpers.length : 0;
+    return _helpers != null ? _helpers.length : 0;
+  }
+
+  void setOption(String name, dynamic value) {
+    _options[name] = value;
   }
 }

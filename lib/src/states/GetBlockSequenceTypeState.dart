@@ -14,7 +14,10 @@ class GetBlockSequenceTypeState extends StubbleState {
   }
 
   StubbleResult process(ProcessMessage msg, StubbleContext context) {
-    return StubbleResult(pop: true);
+    return StubbleResult(
+      pop: true,
+      message: ProcessMessage(charCode: msg.charCode),
+    );
   }
 
   StubbleResult notify(NotifyMessage msg, StubbleContext context) {
@@ -28,23 +31,29 @@ class GetBlockSequenceTypeState extends StubbleState {
                 text: 'Block name not specified'));
       } else {
         var res = StubbleResult(
-            pop: true, message: ProcessMessage(charCode: msg.charCode));
+          pop: true,
+          message: ProcessMessage(charCode: msg.charCode),
+        );
 
         switch (blockName) {
-          case "if":
-            res.state = GetIfBlockState();
+          case 'if':
+            res.state =
+                GetIfBlockState(line: context.line, symbol: context.symbol);
             break;
 
-          case "with":
-            res.state = GetWithBlockState();
+          case 'with':
+            res.state =
+                GetWithBlockState(line: context.line, symbol: context.symbol);
             break;
 
-          case "each":
-            res.state = GetEachBlockState();
+          case 'each':
+            res.state =
+                GetEachBlockState(line: context.line, symbol: context.symbol);
             break;
 
           default:
-            res.state = GetBlockHelperState(helper: blockName);
+            res.state = GetBlockHelperState(
+                helper: blockName, line: context.line, symbol: context.symbol);
             break;
         }
 
@@ -53,9 +62,10 @@ class GetBlockSequenceTypeState extends StubbleState {
     }
 
     return StubbleResult(
-        err: StubbleError(
-            code: ERROR_UNSUPPORTED_NOTIFY,
-            text:
-                'State "${this.runtimeType}" does not support notifies of type ${msg.type}'));
+      err: StubbleError(
+          code: ERROR_UNSUPPORTED_NOTIFY,
+          text:
+              'State "$runtimeType" does not support notifies of type ${msg.type}'),
+    );
   }
 }

@@ -12,6 +12,7 @@ const UNDERSCORE = 95; // _
 const DOT = 46; // .
 const QUOTE = 34; // "
 const SINGLE_QUOTE = 39; // '
+const EOS = -1; // '
 
 const MORE = 62; // >
 const LESS = 60; // <

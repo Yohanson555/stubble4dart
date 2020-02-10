@@ -14,17 +14,30 @@ class GetDataState extends StubbleState {
   StubbleResult init(InitMessage msg, StubbleContext context) {
     final path = msg.value;
 
-    return StubbleResult(state: GetPathState(path: path));
+    return StubbleResult(
+      state: GetPathState(
+        path: path,
+      ),
+    );
   }
 
   StubbleResult process(ProcessMessage msg, StubbleContext context) {
     final charCode = msg.charCode;
 
     switch (charCode) {
+      case EOS:
+        return StubbleResult(
+            err: StubbleError(
+                code: ERROR_UNEXPECTED_END_OF_SOURCE,
+                text: 'unexpected end of source'));
+
       case SPACE:
         return null;
+
       case CLOSE_BRACKET:
-        return StubbleResult(state: CloseBracketState());
+        return StubbleResult(
+          state: CloseBracketState(),
+        );
 
       default:
         return StubbleResult(
@@ -40,9 +53,16 @@ class GetDataState extends StubbleState {
       case NOTIFY_PATH_RESULT:
         _path = msg.value;
 
-        return StubbleResult(message: ProcessMessage(charCode: msg.charCode));
+        return StubbleResult(
+          message: ProcessMessage(
+            charCode: msg.charCode,
+          ),
+        );
       case NOTIFY_SECOND_CLOSE_BRACKET_FOUND:
-        return StubbleResult(pop: true, result: getResult(context));
+        return StubbleResult(
+          pop: true,
+          result: getResult(context),
+        );
       default:
         break;
     }

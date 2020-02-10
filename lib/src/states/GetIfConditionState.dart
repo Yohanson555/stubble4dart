@@ -17,7 +17,13 @@ class GetIfConditionState extends StubbleState {
   StubbleResult process(ProcessMessage msg, StubbleContext context) {
     final charCode = msg.charCode;
 
-    if (charCode == CLOSE_BRACKET) {
+    if (charCode == EOS) {
+      return StubbleResult(
+          err: StubbleError(
+              code: ERROR_UNEXPECTED_END_OF_SOURCE,
+              text: 'unexpected end of source')
+      );
+    } else if (charCode == CLOSE_BRACKET) {
       return StubbleResult(
           err: StubbleError(
               text: 'If block condition malformed',

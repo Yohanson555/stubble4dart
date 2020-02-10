@@ -1,4 +1,4 @@
-import 'package:stubble/stubble/Stubble.dart';
+import 'package:stubble/stubble.dart';
 
 Stubble initHelpers() {
   final s = Stubble();

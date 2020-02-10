@@ -14,7 +14,13 @@ class GetBlockNameState extends StubbleState {
 
     name ??= '';
 
-    if (charCode >= 48 && charCode <= 57) {
+    if (charCode == EOS) {
+      return StubbleResult(
+        err: StubbleError(
+            code: ERROR_UNEXPECTED_END_OF_SOURCE,
+            text: 'block name error: unexpected end of source')
+      );
+    } else if (charCode >= 48 && charCode <= 57) {
       if (name.isEmpty) {
         return StubbleResult(
             err: StubbleError(

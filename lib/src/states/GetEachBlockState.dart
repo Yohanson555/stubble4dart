@@ -1,10 +1,13 @@
 part of stubble;
 
 class GetEachBlockState extends StubbleState {
+  final int symbol;
+  final int line;
+
   String _path = '';
   String _body = '';
 
-  GetEachBlockState() {
+  GetEachBlockState({this.symbol, this.line}) {
     methods = {
       'process': (msg, context) => process(msg, context),
       'notify': (msg, context) => notify(msg, context),
@@ -14,24 +17,44 @@ class GetEachBlockState extends StubbleState {
   StubbleResult process(ProcessMessage msg, StubbleContext context) {
     final charCode = msg.charCode;
 
-    if (charCode == CLOSE_BRACKET) {
-      return StubbleResult(state: CloseBracketState());
+    if (charCode == EOS) {
+      return StubbleResult(
+        err: StubbleError(
+            code: ERROR_UNTERMINATED_BLOCK,
+            text: 'Unterminated "EACH" block at $line:$symbol'),
+      );
+    } else if (charCode == CLOSE_BRACKET) {
+      return StubbleResult(
+        state: CloseBracketState(),
+      );
     } else if (charCode == SPACE) {
       return null;
     }
 
     return StubbleResult(
-        state: GetPathState(), message: ProcessMessage(charCode: charCode));
+      state: GetPathState(),
+      message: ProcessMessage(
+        charCode: charCode,
+      ),
+    );
   }
 
   StubbleResult notify(NotifyMessage msg, StubbleContext context) {
     switch (msg.type) {
       case NOTIFY_PATH_RESULT:
         _path = msg.value;
-        return StubbleResult(message: ProcessMessage(charCode: msg.charCode));
+        return StubbleResult(
+          message: ProcessMessage(
+            charCode: msg.charCode,
+          ),
+        );
 
       case NOTIFY_SECOND_CLOSE_BRACKET_FOUND:
-        return StubbleResult(state: GetBlockEndState(blockName: 'each'));
+        return StubbleResult(
+          state: GetBlockEndState(
+            blockName: 'each',
+          ),
+        );
 
       case NOTIFY_BLOCK_END_RESULT:
         _body = msg.value;
@@ -39,10 +62,12 @@ class GetEachBlockState extends StubbleState {
 
       default:
         return StubbleResult(
-            err: StubbleError(
-                code: ERROR_UNSUPPORTED_NOTIFY,
-                text:
-                    'State "$runtimeType" does not support notifies of type ${msg.type}'));
+          err: StubbleError(
+            code: ERROR_UNSUPPORTED_NOTIFY,
+            text:
+                'State "$runtimeType" does not support notifies of type ${msg.type}',
+          ),
+        );
     }
   }
 
@@ -51,7 +76,8 @@ class GetEachBlockState extends StubbleState {
 
     if (_path.isEmpty) {
       result.err = StubbleError(
-          text: '"EACH" block requires path as parameter', code: ERROR_PATH_NOT_SPECIFIED);
+          text: '"EACH" block requires path as parameter',
+          code: ERROR_PATH_NOT_SPECIFIED);
     } else {
       try {
         final data = context.get(_path);
@@ -78,17 +104,21 @@ class GetEachBlockState extends StubbleState {
             );
           } else {
             result.err = StubbleError(
-                text: '"each" block data should have "List" or "Map" type',
-                code: ERROR_WITH_DATA_MALFORMED);
+              text: '"each" block data should have "List" or "Map" type',
+              code: ERROR_WITH_DATA_MALFORMED,
+            );
           }
         } else {
           result.err = StubbleError(
-              text: 'Can\'t get data from context by path "${_path}"',
-              code: ERROR_PATH_WRONG_SPECIFIED);
+            text: 'Can\'t get data from context by path "${_path}"',
+            code: ERROR_PATH_WRONG_SPECIFIED,
+          );
         }
       } catch (e) {
-        result.err =
-            StubbleError(text: e.toString(), code: ERROR_CALLING_HELPER);
+        result.err = StubbleError(
+          text: e.toString(),
+          code: ERROR_CALLING_HELPER,
+        );
       }
     }
 

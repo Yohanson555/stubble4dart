@@ -2,13 +2,24 @@ part of stubble;
 
 class StubbleContext {
   Map _data;
-  Map <String, Function(List<dynamic>, Function)> _helpers;
+  Map<String, Function(List<dynamic>, Function)> _helpers;
+  Map<String, dynamic> _options;
   Function(String) _fn;
+  int symbol;
+  int line;
 
-  StubbleContext(Map data, Map <String, Function(List<dynamic>, Function)> helpers, [ Function(String) fn]) {
+  StubbleContext([
+    Map data,
+    Map<String, Function(List<dynamic>, Function)> helpers,
+    Map<String, dynamic> options,
+    Function(String) fn,
+  ]) {
     _data = data;
     _helpers = helpers;
+    _options = options;
     _fn = fn;
+    symbol = 0;
+    line = 0;
   }
 
   bool callable(String helper) {
@@ -18,7 +29,11 @@ class StubbleContext {
   }
 
   String call(String helper, List<dynamic> attributes, Function fn) {
-    if(!_helpers.containsKey(helper)) {
+    if (helper == null || helper.isEmpty) {
+      throw Exception('Helper name not specified');
+    }
+
+    if (_helpers == null || !_helpers.containsKey(helper)) {
       throw Exception('Helper "$helper" is not registered');
     }
 
@@ -61,11 +76,19 @@ class StubbleContext {
     return res;
   }
 
+  dynamic opt(name) {
+    if (_options != null && _options.containsKey(name)) {
+      return _options[name];
+    }
+
+    return null;
+  }
+
   Map get data {
     return _data;
   }
 
-  Map <String, Function(List<dynamic>, Function)> get helpers {
+  Map<String, Function(List<dynamic>, Function)> get helpers {
     return _helpers;
   }
 }

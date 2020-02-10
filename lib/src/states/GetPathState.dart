@@ -15,7 +15,12 @@ class GetPathState extends StubbleState {
 
     path ??= '';
 
-    if (charCode == DOT) {
+    if (charCode == EOS) {
+      return StubbleResult(
+        pop: true,
+        message: ProcessMessage(charCode: charCode)
+      );
+    } else if (charCode == DOT) {
       if (path.isEmpty) {
         return StubbleResult(
             err: StubbleError(

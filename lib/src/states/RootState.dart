@@ -14,6 +14,8 @@ class RootState extends StubbleState {
     final res = StubbleResult();
     final charCode = msg.charCode;
 
+    if (charCode == EOS) return null;
+
     if (escape) {
       escape = false;
 
@@ -30,7 +32,6 @@ class RootState extends StubbleState {
           res.result = String.fromCharCode(charCode);
       }
     }
-
 
     return res;
   }
@@ -53,9 +54,6 @@ class RootState extends StubbleState {
       case NOTIFY_IS_DATA_SEQUENCE: // done
         res.state = GetDataState();
         res.message = InitMessage(value: msg.value);
-        break;
-
-      default:
         break;
     }
 

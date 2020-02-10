@@ -18,31 +18,39 @@ class GetBlockEndState extends StubbleState {
   StubbleResult process(ProcessMessage msg, StubbleContext context) {
     final charCode = msg.charCode;
 
-    if (_search) {
-      if (_tmp.length < _look.length) {
-        _tmp += String.fromCharCode(charCode);
+    if (charCode == EOS) {
+      return StubbleResult(
+          pop: true, message: ProcessMessage(charCode: charCode));
+    }
 
-        if (_tmp[_count] != _look[_count]) {
-          _search = false;
-          _body += _tmp;
-        } else {
-          _count++;
-        }
+    if (_search) {
+      _tmp += String.fromCharCode(charCode);
+
+      var l = _look;
+      var t = _tmp;
+
+      final op = context.opt('ignoreTagCaseSensetive');
+
+      if (op == true) {
+        l = l.toLowerCase();
+        t = t.toLowerCase();
       }
 
-      if (_tmp.length == _look.length) {
-        if (_tmp == _look) {
-          return StubbleResult(
-              pop: true,
-              message: NotifyMessage(
-                charCode: null,
-                type: NOTIFY_BLOCK_END_RESULT,
-                value: _body,
-              ));
-        } else {
-          _search = false;
-          _body += _tmp;
-        }
+      if (t[_count] != l[_count]) {
+        _search = false;
+        _body += _tmp;
+      } else {
+        _count++;
+      }
+
+      if (t.length == l.length) {
+        return StubbleResult(
+            pop: true,
+            message: NotifyMessage(
+              charCode: null,
+              type: NOTIFY_BLOCK_END_RESULT,
+              value: _body,
+            ));
       }
     } else {
       if (charCode == OPEN_BRACKET && !_esc) {
