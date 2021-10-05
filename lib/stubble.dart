@@ -1,8 +1,8 @@
 library stubble;
 
-part 'src/characters.dart';
+part 'src/characters_consts.dart';
 part 'src/errors_types.dart';
-part 'src/notify.dart';
+part 'src/notify_types.dart';
 part 'src/stubble_context.dart';
 part 'src/stubble_error.dart';
 part 'src/stubble_machine.dart';
