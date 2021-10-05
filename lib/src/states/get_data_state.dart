@@ -1,7 +1,7 @@
 part of stubble;
 
 class GetDataState extends StubbleState {
-  String _path;
+  String _path = '';
 
   GetDataState() {
     methods = {
@@ -21,20 +21,20 @@ class GetDataState extends StubbleState {
     );
   }
 
-  StubbleResult process(ProcessMessage msg, StubbleContext context) {
+  StubbleResult? process(ProcessMessage msg, StubbleContext context) {
     final charCode = msg.charCode;
 
     switch (charCode) {
-      case EOS:
+      case eos:
         return StubbleResult(
             err: StubbleError(
-                code: ERROR_UNEXPECTED_END_OF_SOURCE,
+                code: errorUnexpectedEndOfSource,
                 text: 'unexpected end of source'));
 
-      case SPACE:
+      case space:
         return null;
 
-      case CLOSE_BRACKET:
+      case closeBracket:
         return StubbleResult(
           state: CloseBracketState(),
         );
@@ -42,23 +42,23 @@ class GetDataState extends StubbleState {
       default:
         return StubbleResult(
             err: StubbleError(
-          code: ERROR_WRONG_DATA_SEQUENCE_CHARACTER,
+          code: errorWrongDataSequenceCharacter,
           text: 'Wrong character "${String.fromCharCode(charCode)}" found',
         ));
     }
   }
 
-  StubbleResult notify(NotifyMessage msg, StubbleContext context) {
+  StubbleResult? notify(NotifyMessage msg, StubbleContext context) {
     switch (msg.type) {
-      case NOTIFY_PATH_RESULT:
+      case notifyPathResult:
         _path = msg.value;
 
         return StubbleResult(
           message: ProcessMessage(
-            charCode: msg.charCode,
+            charCode: msg.charCode!,
           ),
         );
-      case NOTIFY_SECOND_CLOSE_BRACKET_FOUND:
+      case notifySecondCloseBracketFound:
         return StubbleResult(
           pop: true,
           result: getResult(context),
@@ -73,12 +73,10 @@ class GetDataState extends StubbleState {
   String getResult(StubbleContext context) {
     var result = '';
 
-    if (context != null) {
-      var value = context.get(_path);
+    var value = context.get(_path);
 
-      if (value != null) {
-        result = value.toString();
-      }
+    if (value != null) {
+      result = value.toString();
     }
 
     return result;

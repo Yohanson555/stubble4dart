@@ -6,141 +6,207 @@ import 'data/helpers.dart';
 import 'data/templates.dart';
 
 void main() {
-  group('Stubble methods tests', () {
-    Function compiler;
-    final stubble = Stubble();
+  group(
+    'Stubble methods tests',
+    () {
+      late Function compiler;
+      final stubble = Stubble();
 
-    test('Creating a compiller with empty template', () {
-      expect(
-          () => stubble.compile(null),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Can\'t create compiller with empty template')));
-    });
-
-    test('Creating a stubble machine with empty template', () {
-      var sm = StubbleMachine(null);
-
-      expect(sm.run(null), '');
-    });
-
-    test('Creating a compiller with non empty template', () {
-      compiler = stubble.compile('Test template');
-
-      expect(compiler is Function, true);
-    });
-
-    test('Test compilation with previous compiler function', () {
-      expect(compiler({}), 'Test template');
-    });
-
-    test('Registering a new helper function with null name and null function',
+      test(
+        'Creating a compiller with empty template',
         () {
-      expect(
-          () => stubble.registerHelper(null, null),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() == 'Exception: Helper\'s name should be provided')));
-    });
+          expect(
+            () => stubble.compile(null),
+            throwsA(
+              predicate((e) =>
+                  e is Exception &&
+                  e.toString() ==
+                      'Exception: Can\'t create compiller with empty template'),
+            ),
+          );
+        },
+      );
 
-    test('Registering a new helper function with empty name and null function',
+      test(
+        'Creating a stubble machine with empty template',
         () {
-      expect(
-          () => stubble.registerHelper('', null),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() == 'Exception: Helper\'s name should be provided')));
-    });
+          var sm = StubbleMachine(null);
 
-    test('Registering a new helper function with wrong name specified #1', () {
-      expect(
-          () => stubble.registerHelper('555SaveMe', null),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() == 'Exception: Wrong helper name specified')));
-    });
+          expect(
+            sm.run(StubbleContext()),
+            '',
+          );
+        },
+      );
 
-    test('Registering a new helper function with wrong name specified #2', () {
-      expect(
-          () => stubble.registerHelper('Let\'s get party started', null),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() == 'Exception: Wrong helper name specified')));
-    });
+      test(
+        'Creating a compiller with non empty template',
+        () {
+          compiler = stubble.compile('Test template');
 
-    test('Registering a new helper function with wrong name specified #3', () {
-      expect(
-          () => stubble.registerHelper(')(*&%#', null),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() == 'Exception: Wrong helper name specified')));
-    });
+          expect(
+            compiler is Function,
+            true,
+          );
+        },
+      );
 
-    test('Registering a new helper function null function', () {
-      expect(
-          () => stubble.registerHelper('testHelper', null),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Helper\'s function should be provided')));
-    });
+      test(
+        'Test compilation with previous compiler function',
+        () {
+          expect(
+            compiler({}),
+            'Test template',
+          );
+        },
+      );
 
-    test('No helpers', () {
-      stubble.dropHelpers();
-      expect(stubble.helperCount, 0);
-    });
+      test(
+        'Registering a new helper function with empty name and null function',
+        () {
+          expect(
+            () => stubble.registerHelper('', (data, fn) {}),
+            throwsA(
+              predicate((e) =>
+                  e is Exception &&
+                  e.toString() ==
+                      'Exception: Helper\'s name should be provided'),
+            ),
+          );
+        },
+      );
 
-    test('Registering a new correct helper function', () {
-      final res =
-          stubble.registerHelper('testHelper', (List attr, Function fn) {});
+      test(
+        'Registering a new helper function with wrong name specified #1',
+        () {
+          expect(
+            () => stubble.registerHelper('555SaveMe', (data, fn) {}),
+            throwsA(
+              predicate((e) =>
+                  e is Exception &&
+                  e.toString() == 'Exception: Wrong helper name specified'),
+            ),
+          );
+        },
+      );
 
-      expect(res, true);
-      expect(stubble.helperCount, 1);
-    });
+      test(
+        'Registering a new helper function with wrong name specified #2',
+        () {
+          expect(
+            () => stubble.registerHelper(
+                'Let\'s get party started', (data, fn) {}),
+            throwsA(
+              predicate((e) =>
+                  e is Exception &&
+                  e.toString() == 'Exception: Wrong helper name specified'),
+            ),
+          );
+        },
+      );
 
-    test('Registering a helper function with exist name', () {
-      final res =
-          stubble.registerHelper('testHelper', (List attr, Function fn) {});
+      test(
+        'Registering a new helper function with wrong name specified #3',
+        () {
+          expect(
+            () => stubble.registerHelper(')(*&%#', (data, fn) {}),
+            throwsA(
+              predicate((e) =>
+                  e is Exception &&
+                  e.toString() == 'Exception: Wrong helper name specified'),
+            ),
+          );
+        },
+      );
 
-      expect(res, false);
-      expect(stubble.helperCount, 1);
-    });
+      test(
+        'No helpers',
+        () {
+          stubble.dropHelpers();
+          expect(stubble.helperCount, 0);
+        },
+      );
 
-    test('Registering another helper function', () {
-      final res =
-          stubble.registerHelper('testHelper2', (List attr, Function fn) {});
+      test(
+        'Registering a new correct helper function',
+        () {
+          final res = stubble.registerHelper(
+            'testHelper',
+            (List attr, Function? fn) {},
+          );
 
-      expect(res, true);
-      expect(stubble.helperCount, 2);
-    });
+          expect(res, true);
+          expect(stubble.helperCount, 1);
+        },
+      );
 
-    test('Registering third helper', () {
-      final res =
-          stubble.registerHelper('testHelper3', (List attr, Function fn) {});
+      test(
+        'Registering a helper function with exist name',
+        () {
+          final res = stubble.registerHelper(
+            'testHelper',
+            (List attr, Function? fn) {},
+          );
 
-      expect(res, true);
-      expect(stubble.helperCount, 3);
-    });
+          expect(res, false);
+          expect(stubble.helperCount, 1);
+        },
+      );
 
-    test('Removing helper function with name testHelper2', () {
-      final res = stubble.removeHelper('testHelper2');
+      test(
+        'Registering another helper function',
+        () {
+          final res = stubble.registerHelper(
+            'testHelper2',
+            (List attr, Function? fn) {},
+          );
 
-      expect(res, true);
-      expect(stubble.helperCount, 2);
-    });
+          expect(res, true);
+          expect(stubble.helperCount, 2);
+        },
+      );
 
-    test('Trying to remove already removed helper', () {
-      final res = stubble.removeHelper('testHelper2');
+      test(
+        'Registering third helper',
+        () {
+          final res = stubble.registerHelper(
+            'testHelper3',
+            (List attr, Function? fn) {},
+          );
 
-      expect(res, false);
-    });
+          expect(res, true);
+          expect(stubble.helperCount, 3);
+        },
+      );
 
-    test('Drop all helpers test', () {
-      stubble.dropHelpers();
-      expect(stubble.helperCount, 0);
-    });
-  });
+      test(
+        'Removing helper function with name testHelper2',
+        () {
+          final res = stubble.removeHelper('testHelper2');
+
+          expect(res, true);
+          expect(stubble.helperCount, 2);
+        },
+      );
+
+      test(
+        'Trying to remove already removed helper',
+        () {
+          final res = stubble.removeHelper('testHelper2');
+
+          expect(res, false);
+        },
+      );
+
+      test(
+        'Drop all helpers test',
+        () {
+          stubble.dropHelpers();
+          expect(stubble.helperCount, 0);
+        },
+      );
+    },
+  );
 
   group('Stubble context tests', () {
     test('Empty context', () {
@@ -152,97 +218,125 @@ void main() {
       expect(context.get('name'), null);
     });
 
-    test('Context get() test', () {
-      final data = {
-        'name': 'John',
-        'age': 32,
-        'languages': ['JavaScript', 'Dart', 'Go', 'Html', 'Css', 'Php'],
-        'birth': {
-          'city': 'St. Petersburg',
-          'year': 1987,
-          'month': 1,
-          'day': 19,
-          'weight': 4.78,
-          'mother': {'name': 'Elena'}
-        }
-      };
-      final context = StubbleContext(data, null);
+    test(
+      'Context get() test',
+      () {
+        final data = {
+          'name': 'John',
+          'age': 32,
+          'languages': ['JavaScript', 'Dart', 'Go', 'Html', 'Css', 'Php'],
+          'birth': {
+            'city': 'St. Petersburg',
+            'year': 1987,
+            'month': 1,
+            'day': 19,
+            'weight': 4.78,
+            'mother': {'name': 'Elena'}
+          }
+        };
+        final context = StubbleContext(data, null);
 
-      expect(context.get('name'), 'John');
-      expect(context.get('age'), 32);
-      expect(context.get('languages') is List, true);
-      expect(context.get('birth') is Map, true);
-      expect(context.get('birth.city'), 'St. Petersburg');
-      expect(context.get('birth.year'), 1987);
-      expect(context.get('birth.weight'), 4.78);
-      expect(context.get('birth.mother') is Map, true);
-      expect(context.get('birth.mother.name'), 'Elena');
-      expect(context.get('birth.mother.lname'), null);
-      expect(context.get('Name'), null);
-    });
+        expect(context.get('name'), 'John');
+        expect(context.get('age'), 32);
+        expect(context.get('languages') is List, true);
+        expect(context.get('birth') is Map, true);
+        expect(context.get('birth.city'), 'St. Petersburg');
+        expect(context.get('birth.year'), 1987);
+        expect(context.get('birth.weight'), 4.78);
+        expect(context.get('birth.mother') is Map, true);
+        expect(context.get('birth.mother.name'), 'Elena');
+        expect(context.get('birth.mother.lname'), null);
+        expect(context.get('Name'), null);
+      },
+    );
 
-    test('Calling existing helper', () {
-      final helpers = <String, Function(List<dynamic>, Function)>{};
+    test(
+      'Calling existing helper',
+      () {
+        final helpers = <String, Function(List<dynamic>, Function?)>{};
 
-      helpers['simple'] = (List attrs, Function fn) {
-        return 'Helper result';
-      };
+        helpers['simple'] = (List attrs, Function? fn) {
+          return 'Helper result';
+        };
 
-      final context = StubbleContext(null, helpers);
+        final context = StubbleContext(null, helpers);
 
-      expect(context.call('simple', null, null), 'Helper result');
-    });
+        expect(context.call('simple', [], null), 'Helper result');
+      },
+    );
 
-    test('Calling existing helper with attributes #1', () {
-      final helpers = <String, Function(List<dynamic>, Function)>{};
+    test(
+      'Calling existing helper with attributes #1',
+      () {
+        final helpers = <String, Function(List<dynamic>, Function?)>{};
 
-      helpers['simple'] = (List attrs, Function fn) {
-        return 'Number of attributes is ${attrs.length}';
-      };
+        helpers['simple'] = (List attrs, Function? fn) {
+          return 'Number of attributes is ${attrs.length}';
+        };
 
-      final context = StubbleContext(null, helpers);
+        final context = StubbleContext(null, helpers);
 
-      expect(context.call('simple', [1, 'String attr', {}, false], null),
-          'Number of attributes is 4');
-    });
+        expect(context.call('simple', [1, 'String attr', {}, false], null),
+            'Number of attributes is 4');
+      },
+    );
 
-    test('Calling existing helper with attributes #2', () {
-      final helpers = <String, Function(List<dynamic>, Function)> {};
+    test(
+      'Calling existing helper with attributes #2',
+      () {
+        final helpers = <String, Function(List<dynamic>, Function?)>{};
 
-      helpers['simple'] = (List attrs, Function fn) {
-        return 'Second attribute is ${attrs[1]}';
-      };
+        helpers['simple'] = (List attrs, Function? fn) {
+          return 'Second attribute is ${attrs[1]}';
+        };
 
-      final context = StubbleContext(null, helpers);
+        final context = StubbleContext(null, helpers);
 
-      expect(context.call('simple', [1, 'String attr', {}, false], null),
-          'Second attribute is String attr');
-    });
+        expect(context.call('simple', [1, 'String attr', {}, false], null),
+            'Second attribute is String attr');
+      },
+    );
 
-    test('check for callable non-existing helper', () {
-      var context = StubbleContext(null, null);
-      expect(context.callable('simple'), false);
-    });
+    test(
+      'check for callable non-existing helper',
+      () {
+        var context = StubbleContext(null, null);
+        expect(context.callable('simple'), false);
+      },
+    );
 
-    test('Calling helper withh no name given', () {
-      final context = StubbleContext(null, null);
+    test(
+      'Calling helper withh no name given',
+      () {
+        final context = StubbleContext(null, null);
 
-      expect(
-          () => context.call('', null, null),
-          throwsA(predicate((e) =>
-              e is Exception && e.toString() == 'Exception: Helper name not specified')));
-    });
+        expect(
+          () => context.call('', [], null),
+          throwsA(
+            predicate((e) =>
+                e is Exception &&
+                e.toString() == 'Exception: Helper name not specified'),
+          ),
+        );
+      },
+    );
 
-    test('Calling non-existing helper', () {
-      final helpers = <String, Function(List<dynamic>, Function)>{};
-      final context = StubbleContext(null, helpers);
+    test(
+      'Calling non-existing helper',
+      () {
+        final helpers = <String, Function(List<dynamic>, Function?)>{};
+        final context = StubbleContext(null, helpers);
 
-      expect(
-          () => context.call('simple', null, null),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() == 'Exception: Helper "simple" is not registered')));
-    });
+        expect(
+          () => context.call('simple', [], null),
+          throwsA(
+            predicate((e) =>
+                e is Exception &&
+                e.toString() == 'Exception: Helper "simple" is not registered'),
+          ),
+        );
+      },
+    );
 
     test('Try getting non-existing option', () {
       final context = StubbleContext();
@@ -427,44 +521,44 @@ void main() {
   group('Simple handlers templates test', () {
     final stubble = Stubble();
 
-    stubble.registerHelper('simpleHelper', (List attrs, Function fn) {
+    stubble.registerHelper('simpleHelper', (List attrs, Function? fn) {
       return 'Simple helper result';
     });
 
-    stubble.registerHelper('_simpleHelper', (List attrs, Function fn) {
+    stubble.registerHelper('_simpleHelper', (List attrs, Function? fn) {
       return 'Simple helper with first start slash result';
     });
 
-    stubble.registerHelper('simpleHelper_', (List attrs, Function fn) {
+    stubble.registerHelper('simpleHelper_', (List attrs, Function? fn) {
       return 'Simple helper with last start slash result';
     });
 
-    stubble.registerHelper('attrCountHelper', (List attrs, Function fn) {
+    stubble.registerHelper('attrCountHelper', (List attrs, Function? fn) {
       return 'Attrs count: ${attrs.length}';
     });
 
-    stubble.registerHelper('attrByNum', (List attrs, Function fn) {
+    stubble.registerHelper('attrByNum', (List attrs, Function? fn) {
       final index = attrs.first;
 
       if (index == null) {
         throw Exception('Index is undefined');
       }
 
-      if (!(index is int)) {
+      if (index is! int) {
         throw Exception('Index is not an int');
       }
 
       return 'Attrs is: ${attrs[index]}';
     });
 
-    stubble.registerHelper('attrByNum2', (List attrs, Function fn) {
+    stubble.registerHelper('attrByNum2', (List attrs, Function? fn) {
       final index = attrs.first;
 
       if (index == null) {
         throw Exception('Index is undefined');
       }
 
-      if (!(index is int)) {
+      if (index is! int) {
         throw Exception('Index is not an int');
       }
 
@@ -473,11 +567,14 @@ void main() {
 
     test('Non-block helper call without registering it', () {
       expect(
-          () => stubble.compile('{{\$helperName}}')(null),
-          throwsA(predicate((e) =>
+        () => stubble.compile('{{\$helperName}}')(null),
+        throwsA(
+          predicate((e) =>
               e is Exception &&
               e.toString() ==
-                  'Exception: Error (18) on 1:14 Helper "helperName" is unregistered')));
+                  'Exception: Error (18) on 1:14 Helper "helperName" is unregistered'),
+        ),
+      );
     });
 
     test(
@@ -530,83 +627,110 @@ void main() {
 
     test('Calling "attrByNum" helper with out attributes', () {
       expect(
-          () => stubble.compile('{{\$attrByNum}}')(null),
-          throwsA(predicate((e) =>
+        () => stubble.compile('{{\$attrByNum}}')(null),
+        throwsA(
+          predicate((e) =>
               e is Exception &&
               e.toString() ==
-                  'Exception: Error (9) on 1:13 Error in helper function attrByNum: Exception: Index is undefined')));
+                  'Exception: Error (9) on 1:13 Error in helper function attrByNum: Exception: Index is undefined'),
+        ),
+      );
     });
 
     test('Calling "attrByNum" helper with wrong index specified', () {
       expect(
-          () => stubble.compile('{{\$attrByNum 21.2}}')(null),
-          throwsA(predicate((e) =>
+        () => stubble.compile('{{\$attrByNum 21.2}}')(null),
+        throwsA(
+          predicate((e) =>
               e is Exception &&
               e.toString() ==
-                  'Exception: Error (9) on 1:18 Error in helper function attrByNum: Exception: Index is not an int')));
+                  'Exception: Error (9) on 1:18 Error in helper function attrByNum: Exception: Index is not an int'),
+        ),
+      );
     });
 
     test('Wrong helper call #1', () {
       expect(
-          () => stubble.compile('{{\$ attrByNum}}')(null),
-          throwsA(predicate((e) =>
+        () => stubble.compile('{{\$ attrByNum}}')(null),
+        throwsA(
+          predicate((e) =>
               e is Exception &&
               e.toString() ==
-                  'Exception: Error (8) on 1:3 Block name is empty')));
+                  'Exception: Error (8) on 1:3 Block name is empty'),
+        ),
+      );
     });
 
     test('Wrong helper call #2', () {
       expect(
-          () => stubble.compile('{{\$123attrByNum}}')(null),
-          throwsA(predicate((e) =>
+        () => stubble.compile('{{\$123attrByNum}}')(null),
+        throwsA(
+          predicate((e) =>
               e is Exception &&
               e.toString() ==
-                  'Exception: Error (8) on 1:3 Block name should not start with number character')));
+                  'Exception: Error (8) on 1:3 Block name should not start with number character'),
+        ),
+      );
     });
 
     test('Wrong helper call #2.5', () {
       expect(
-          () => stubble.compile('{{\$attrByNum123}}')(null),
-          throwsA(predicate((e) =>
+        () => stubble.compile('{{\$attrByNum123}}')(null),
+        throwsA(
+          predicate((e) =>
               e is Exception &&
               e.toString() ==
-                  'Exception: Error (18) on 1:16 Helper "attrByNum123" is unregistered')));
+                  'Exception: Error (18) on 1:16 Helper "attrByNum123" is unregistered'),
+        ),
+      );
     });
 
     test('Wrong helper call #3', () {
       expect(
-          () => stubble.compile('{{\$#attrByNum}}')(null),
-          throwsA(predicate((e) =>
+        () => stubble.compile('{{\$#attrByNum}}')(null),
+        throwsA(
+          predicate((e) =>
               e is Exception &&
               e.toString() ==
-                  'Exception: Error (3) on 1:3 Character "#" is not a valid in block name')));
+                  'Exception: Error (3) on 1:3 Character "#" is not a valid in block name'),
+        ),
+      );
     });
 
     test('Рelper call with wrong number param #1', () {
       expect(
-          () => stubble.compile('{{\$attrByNum 0.23.1 }}')(null),
-          throwsA(predicate((e) =>
+        () => stubble.compile('{{\$attrByNum 0.23.1 }}')(null),
+        throwsA(
+          predicate((e) =>
               e is Exception &&
               e.toString() ==
-                  'Exception: Error (11) on 1:17 Duplicate number delimiter')));
+                  'Exception: Error (11) on 1:17 Duplicate number delimiter'),
+        ),
+      );
     });
 
     test('Рelper call with wrong number param #2', () {
       expect(
-          () => stubble.compile('{{\$attrByNum 0.23A }}')(null),
-          throwsA(predicate((e) =>
+        () => stubble.compile('{{\$attrByNum 0.23A }}')(null),
+        throwsA(
+          predicate((e) =>
               e is Exception &&
               e.toString() ==
-                  'Exception: Error (11) on 1:17 Number attribute malformed')));
+                  'Exception: Error (11) on 1:17 Number attribute malformed'),
+        ),
+      );
     });
 
     test('Helper call with wrong string param with brackets', () {
       expect(
-          () => stubble.compile('{{\$attrByNum "test{" }}')(null),
-          throwsA(predicate((e) =>
+        () => stubble.compile('{{\$attrByNum "test{" }}')(null),
+        throwsA(
+          predicate((e) =>
               e is Exception &&
               e.toString() ==
-                  'Exception: Error (19) on 1:18 Wrong attribute value character "{"')));
+                  'Exception: Error (19) on 1:18 Wrong attribute value character "{"'),
+        ),
+      );
     });
 
     test('Helper call with wrong string param with brackets', () {
@@ -619,55 +743,58 @@ void main() {
   group('Block handlers templates test', () {
     final stubble = Stubble();
 
-    stubble.registerHelper('errorHelper', (List attrs, Function fn) {
+    stubble.registerHelper('errorHelper', (List attrs, Function? fn) {
       throw Exception('Helper error!');
     });
 
-    stubble.registerHelper('simpleBlockHelper', (List attrs, Function fn) {
+    stubble.registerHelper('simpleBlockHelper', (List attrs, Function? fn) {
       final data = {'A': 'First param', 'B': 'Second param'};
 
-      return fn(data);
+      return fn != null ? fn(data) : '';
     });
 
-    stubble.registerHelper('manyStrings', (List attrs, Function fn) {
+    stubble.registerHelper('manyStrings', (List attrs, Function? fn) {
       int count = attrs.first;
-      count ??= 1;
 
       var res = '';
 
-      for (var i = 0; i < count; i++) {
-        res += fn({'index': i + 1}) + ';';
+      if (fn != null) {
+        for (var i = 0; i < count; i++) {
+          res += fn({'index': i + 1}) + ';';
+        }
       }
 
       return res;
     });
 
-    stubble.registerHelper('multyStrings', (List attrs, Function fn) {
-      int count = attrs[0];
+    stubble.registerHelper('multyStrings', (List attrs, Function? fn) {
+      int count = attrs[0]! as int;
       int multy = attrs[1];
 
       var res = '';
-
-      for (var i = 0; i < count; i++) {
-        res += fn({'index': i + 1, 'multy': multy}) + ';';
+      
+      if (fn != null) {
+        for (int i = 0; i < count; i++) {
+          res += fn({'index': i + 1, 'multy': multy}) + ';';
+        }
       }
 
       return res;
     });
 
-    stubble.registerHelper('multiply', (List attrs, Function fn) {
+    stubble.registerHelper('multiply', (List attrs, Function? fn) {
       int A = attrs[0];
       int B = attrs[1];
 
       return (A * B).toString();
     });
 
-    stubble.registerHelper('ABC', (List attrs, Function fn) {
-      return fn({});
+    stubble.registerHelper('ABC', (List attrs, Function? fn) {
+      return fn != null ? fn({}) : '';
     });
 
-    stubble.registerHelper('abc', (List attrs, Function fn) {
-      return fn({'name': 'John'});
+    stubble.registerHelper('abc', (List attrs, Function? fn) {
+      return fn != null ? fn({'name': 'John'}) : '';
     });
 
     test('Calling simple block helper #1', () {
@@ -1045,7 +1172,9 @@ void main() {
 
     test('WITH block with malformed body', () {
       expect(
-          () => stubble.compile('{{#with Person}} Some info {{&?A} {{/with}}')({ 'Person': { 'A': 21 } }),
+          () => stubble.compile('{{#with Person}} Some info {{&?A} {{/with}}')({
+                'Person': {'A': 21}
+              }),
           throwsA(predicate((e) =>
               e is Exception &&
               e.toString() ==
@@ -1143,7 +1272,13 @@ void main() {
 
     test('Calling malformed EACH block', () {
       expect(
-          () => stubble.compile('{{#each B}} {{!name} {{/each}}')({ 'B': [{ 'name': 1 }, { 'name': 2 }, { 'name': 3 }] }),
+          () => stubble.compile('{{#each B}} {{!name} {{/each}}')({
+                'B': [
+                  {'name': 1},
+                  {'name': 2},
+                  {'name': 3}
+                ]
+              }),
           throwsA(predicate((e) =>
               e is Exception &&
               e.toString() ==
@@ -1156,7 +1291,7 @@ void main() {
       final stubble = initHelpers();
 
       expect(stubble.compile(tpl1)(data1),
-          "<center><ds><b>* BILL #123 *</b></ds></center><br><b><row><cell>Bill datetime</cell><cell align=\'right\'>1970-01-19T09:38:03.595</cell></row></b><br><br>[123123123]");
+          "<center><ds><b>* BILL #123 *</b></ds></center><br><b><row><cell>Bill datetime</cell><cell align='right'>1970-01-19T09:38:03.595</cell></row></b><br><br>[123123123]");
     });
   });
 

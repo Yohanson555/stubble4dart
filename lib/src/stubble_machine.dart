@@ -1,24 +1,26 @@
 part of stubble;
 
 class StubbleMachine {
-  String _template;
-  List<StubbleState> _stack;
-  String _res;
+  final List<StubbleState> _stack = [];
+  String _res = '';
+
+  String? _template;
+
   int _line = 0; // template lining support
   int _symbol = 0;
 
-  StubbleMachine(String tpl) {
+  StubbleMachine(String? tpl) {
     _template = tpl;
   }
 
   /// Launching machine with a given StubbleContext
   String run(StubbleContext context) {
-    _stack = [];
+    _stack.clear();
     _stack.add(RootState());
     _res = '';
 
-    if (_template != null && _template.isNotEmpty) {
-      final lines = _template.split('\n');
+    if (_template != null && _template!.isNotEmpty) {
+      final lines = _template!.split('\n');
 
       for (var l = 0; l < lines.length; l++) {
         _line = l + 1;
@@ -38,13 +40,13 @@ class StubbleMachine {
         }
 
         if (l < lines.length - 1) {
-          _process(ProcessMessage(charCode: ENTER), context);
+          _process(ProcessMessage(charCode: enter), context);
         }
       }
 
-      _process(ProcessMessage(charCode: EOS), context);
+      _process(ProcessMessage(charCode: eos), context);
 
-      if (!(_stack.last is RootState)) {
+      if (_stack.last is! RootState) {
         throw Exception(
             'Something go wrong: please check your template for issues.');
       }
@@ -57,7 +59,7 @@ class StubbleMachine {
   void _process(StubbleMessage msg, StubbleContext context) {
     final state = _stack.last;
 
-    if (state != null && state.canAcceptMessage(msg)) {
+    if (state.canAcceptMessage(msg)) {
       final res = state.processMessage(msg, context);
 
       if (res != null) {
@@ -69,7 +71,7 @@ class StubbleMachine {
   /// Processing message result
   void _processResult(StubbleResult r, StubbleContext context) {
     if (r.result != null) {
-      _res += r.result;
+      _res += r.result!;
     }
 
     if (r.pop == true) {
@@ -77,19 +79,19 @@ class StubbleMachine {
     }
 
     if (r.state != null) {
-      _stack.add(r.state);
+      _stack.add(r.state!);
     }
 
     if (r.message != null) {
-      _process(r.message, context);
+      _process(r.message!, context);
     }
 
     if (r.err != null) {
       if (context.opt('ignoreUnregisteredHelperErrors') == true &&
-          r.err.code == ERROR_HELPER_UNREGISTERED) {
+          r.err!.code == errorHelperUnregistered) {
         print('Warning: ${r.err}');
       } else {
-        final e = 'Error (${r.err.code}) on $_line:$_symbol ${r.err.text}';
+        final e = 'Error (${r.err!.code}) on $_line:$_symbol ${r.err!.text}';
 
         print(e);
 

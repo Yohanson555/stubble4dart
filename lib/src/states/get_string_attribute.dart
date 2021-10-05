@@ -5,34 +5,34 @@ class GetStringAttribute extends StubbleState {
   String _value = '';
   bool _escape = false;
 
-  GetStringAttribute({@required this.quoteSymbol}) {
+  GetStringAttribute({required this.quoteSymbol}) {
     methods = {
       'process': (msg, context) => process(msg, context),
     };
   }
 
-  StubbleResult process(ProcessMessage msg, StubbleContext context) {
+  StubbleResult? process(ProcessMessage msg, StubbleContext context) {
     final charCode = msg.charCode;
 
     if (_escape) {
       _escape = false;
       _value += String.fromCharCode(charCode);
     } else {
-      if (charCode == OPEN_BRACKET || charCode == CLOSE_BRACKET) {
+      if (charCode == openBracket || charCode == closeBracket) {
         return StubbleResult(
           err: StubbleError(
-            code: ERROR_STRING_ATTRIBUTE_MALFORMED,
+            code: errorStringAttributeMalformed,
             text:
                 'Wrong attribute value character "${String.fromCharCode(charCode)}"',
           ),
         );
-      } else if (charCode == BACK_SLASH) {
+      } else if (charCode == backSlash) {
         _escape = true;
       } else if (charCode == quoteSymbol) {
         return StubbleResult(
           pop: true,
           message: NotifyMessage(
-            type: NOTIFY_ATTR_RESULT,
+            type: notifyAttrResult,
             value: _value,
             charCode: null,
           ),

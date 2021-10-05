@@ -9,16 +9,16 @@ class GetBlockEndState extends StubbleState {
   String _body = '';
   int _count = 0;
 
-  GetBlockEndState({@required this.blockName}) {
+  GetBlockEndState({required this.blockName}) {
     methods = {
       'process': (msg, context) => process(msg, context),
     };
   }
 
-  StubbleResult process(ProcessMessage msg, StubbleContext context) {
+  StubbleResult? process(ProcessMessage msg, StubbleContext context) {
     final charCode = msg.charCode;
 
-    if (charCode == EOS) {
+    if (charCode == eos) {
       return StubbleResult(
           pop: true, message: ProcessMessage(charCode: charCode));
     }
@@ -48,22 +48,22 @@ class GetBlockEndState extends StubbleState {
             pop: true,
             message: NotifyMessage(
               charCode: null,
-              type: NOTIFY_BLOCK_END_RESULT,
+              type: notifyBlockEndResult,
               value: _body,
             ));
       }
     } else {
-      if (charCode == OPEN_BRACKET && !_esc) {
+      if (charCode == openBracket && !_esc) {
         _search = true;
-        _tmp = '' + String.fromCharCode(OPEN_BRACKET);
+        _tmp = '' + String.fromCharCode(openBracket);
         _count = 0;
 
-        var _o = String.fromCharCode(OPEN_BRACKET);
-        var _c = String.fromCharCode(CLOSE_BRACKET);
-        var _s = String.fromCharCode(SLASH);
+        var _o = String.fromCharCode(openBracket);
+        var _c = String.fromCharCode(closeBracket);
+        var _s = String.fromCharCode(slash);
 
         _look = '$_o$_o$_s$blockName$_c$_c'; // {{/<name>}}
-      } else if (charCode == BACK_SLASH && !_esc) {
+      } else if (charCode == backSlash && !_esc) {
         _esc = true;
       } else {
         _esc = false;

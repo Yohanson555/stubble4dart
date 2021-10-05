@@ -1,8 +1,8 @@
 part of stubble;
 
 class GetPathState extends StubbleState {
-  String path = '';
-  int lastChar;
+  String? path;
+  int? lastChar;
 
   GetPathState({this.path}) {
     methods = {
@@ -10,53 +10,51 @@ class GetPathState extends StubbleState {
     };
   }
 
-  StubbleResult process(ProcessMessage msg, StubbleContext context) {
+  StubbleResult? process(ProcessMessage msg, StubbleContext context) {
     final charCode = msg.charCode;
 
     path ??= '';
 
-    if (charCode == EOS) {
+    if (charCode == eos) {
       return StubbleResult(
-        pop: true,
-        message: ProcessMessage(charCode: charCode)
-      );
-    } else if (charCode == DOT) {
-      if (path.isEmpty) {
+          pop: true, message: ProcessMessage(charCode: charCode));
+    } else if (charCode == dot) {
+      if (path!.isEmpty) {
         return StubbleResult(
             err: StubbleError(
                 text: 'Path should not start with point character',
-                code: ERROR_PATH_WRONG_SPECIFIED));
+                code: errorPathWrongSpecified));
       }
 
-      path += String.fromCharCode(charCode);
+      path = path! + String.fromCharCode(charCode);
     } else if ((charCode >= 48 && charCode <= 57)) {
-      if (path.isEmpty) {
+      if (path!.isEmpty) {
         return StubbleResult(
             err: StubbleError(
                 text: 'Path should not start with number character',
-                code: ERROR_PATH_WRONG_SPECIFIED));
+                code: errorPathWrongSpecified));
       }
 
-      path += String.fromCharCode(charCode);
+      path = path! + String.fromCharCode(charCode);
     } else if ((charCode >= 65 && charCode <= 90) ||
         (charCode >= 97 && charCode <= 122) ||
         charCode == 95) {
-      path += String.fromCharCode(charCode);
-    } else if (charCode == SPACE || charCode == CLOSE_BRACKET) {
-      if (lastChar == DOT) {
+      path = path! + String.fromCharCode(charCode);
+    } else if (charCode == space || charCode == closeBracket) {
+      if (lastChar == dot) {
         return StubbleResult(
             err: StubbleError(
                 text: 'Path should not end with dot character',
-                code: ERROR_PATH_WRONG_SPECIFIED));
+                code: errorPathWrongSpecified));
       }
       return StubbleResult(
           pop: true,
           message: NotifyMessage(
-              type: NOTIFY_PATH_RESULT, value: path, charCode: charCode));
+              type: notifyPathResult, value: path, charCode: charCode));
     } else {
       return StubbleResult(
           err: StubbleError(
-              code: ERROR_NOT_A_VALID_PATH_CHAR,
+              code: errorNotAValidPathChar,
               text:
                   'Character "${String.fromCharCode(charCode)}" is not a valid in path'));
     }

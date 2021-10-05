@@ -13,13 +13,13 @@ class CloseBracketState extends StubbleState {
     final charCode = msg.charCode;
 
     switch (charCode) {
-      case CLOSE_BRACKET:
+      case closeBracket:
         res.pop = true;
-        res.message = NotifyMessage(type: NOTIFY_SECOND_CLOSE_BRACKET_FOUND);
+        res.message = NotifyMessage(type: notifySecondCloseBracketFound);
         break;
       default:
         res.err = StubbleError(
-            code: ERROR_CHAR_NOT_A_CLOSE_BRACKET,
+            code: errorChartNotACloseBracket,
             text: 'Wrong character is given. Expected "}"');
     }
 

@@ -3,7 +3,7 @@ part of stubble;
 class GetIfConditionState extends StubbleState {
   dynamic leftPart;
   dynamic rightPart;
-  String condition;
+  String? condition;
 
   int _state = 0;
 
@@ -14,21 +14,20 @@ class GetIfConditionState extends StubbleState {
     };
   }
 
-  StubbleResult process(ProcessMessage msg, StubbleContext context) {
+  StubbleResult? process(ProcessMessage msg, StubbleContext context) {
     final charCode = msg.charCode;
 
-    if (charCode == EOS) {
+    if (charCode == eos) {
       return StubbleResult(
           err: StubbleError(
-              code: ERROR_UNEXPECTED_END_OF_SOURCE,
-              text: 'unexpected end of source')
-      );
-    } else if (charCode == CLOSE_BRACKET) {
+              code: errorUnexpectedEndOfSource,
+              text: 'unexpected end of source'));
+    } else if (charCode == closeBracket) {
       return StubbleResult(
           err: StubbleError(
               text: 'If block condition malformed',
-              code: ERROR_IF_BLOCK_MALFORMED));
-    } else if (charCode == SPACE) {
+              code: errorIfBlockMalformed));
+    } else if (charCode == space) {
       return null;
     } else {
       switch (_state) {
@@ -43,7 +42,6 @@ class GetIfConditionState extends StubbleState {
             state: GetConditionState(),
             message: ProcessMessage(charCode: charCode),
           );
-          break;
 
         case 2:
           return StubbleResult(
@@ -57,9 +55,9 @@ class GetIfConditionState extends StubbleState {
     }
   }
 
-  StubbleResult notify(NotifyMessage msg, StubbleContext context) {
+  StubbleResult? notify(NotifyMessage msg, StubbleContext context) {
     switch (msg.type) {
-      case NOTIFY_ATTR_RESULT:
+      case notifyAttrResult:
         if (_state == 0) {
           leftPart = msg.value;
           _state++;
@@ -70,7 +68,7 @@ class GetIfConditionState extends StubbleState {
             pop: true,
             message: NotifyMessage(
               value: checkCondition(),
-              type: NOTIFY_CONDITION_RESULT,
+              type: notifyConditionResult,
               charCode: msg.charCode,
             ),
           );
@@ -78,21 +76,21 @@ class GetIfConditionState extends StubbleState {
           return StubbleResult(
               err: StubbleError(
                   text: 'If block condition malformed',
-                  code: ERROR_IF_BLOCK_MALFORMED));
+                  code: errorIfBlockMalformed));
         }
 
         if (msg.charCode != null) {
-          return StubbleResult(message: ProcessMessage(charCode: msg.charCode));
+          return StubbleResult(message: ProcessMessage(charCode: msg.charCode!));
         }
 
         break;
-        
-      case NOTIFY_CONDITION_RESULT:
+
+      case notifyConditionResult:
         condition = msg.value;
         _state++;
 
         if (msg.charCode != null) {
-          return StubbleResult(message: ProcessMessage(charCode: msg.charCode));
+          return StubbleResult(message: ProcessMessage(charCode: msg.charCode!));
         }
 
         break;
@@ -100,7 +98,7 @@ class GetIfConditionState extends StubbleState {
       default:
         return StubbleResult(
             err: StubbleError(
-                code: ERROR_UNSUPPORTED_NOTIFY,
+                code: errorUnsupportedNotify,
                 text:
                     'State "$runtimeType" does not support notifies of type ${msg.type}'));
     }

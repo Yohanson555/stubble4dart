@@ -7,28 +7,28 @@ class GetWithBlockState extends StubbleState {
   String _path = '';
   String _body = '';
 
-  GetWithBlockState({this.symbol, this.line}) {
+  GetWithBlockState({required this.symbol, required this.line}) {
     methods = {
       'process': (msg, context) => process(msg, context),
       'notify': (msg, context) => notify(msg, context),
     };
   }
 
-  StubbleResult process(ProcessMessage msg, StubbleContext context) {
+  StubbleResult? process(ProcessMessage msg, StubbleContext context) {
     final charCode = msg.charCode;
 
-    if (charCode == EOS) {
+    if (charCode == eos) {
       return StubbleResult(
         err: StubbleError(
-          code: ERROR_UNTERMINATED_BLOCK,
+          code: errorUnterminatedBlock,
           text: 'Unterminated "WITH" block at $line:$symbol',
         ),
       );
-    } else if (charCode == CLOSE_BRACKET) {
+    } else if (charCode == closeBracket) {
       return StubbleResult(
         state: CloseBracketState(),
       );
-    } else if (charCode == SPACE) {
+    } else if (charCode == space) {
       return null;
     }
 
@@ -40,24 +40,24 @@ class GetWithBlockState extends StubbleState {
     );
   }
 
-  StubbleResult notify(NotifyMessage msg, StubbleContext context) {
+  StubbleResult? notify(NotifyMessage msg, StubbleContext context) {
     switch (msg.type) {
-      case NOTIFY_PATH_RESULT:
+      case notifyPathResult:
         _path = msg.value;
         return StubbleResult(
           message: ProcessMessage(
-            charCode: msg.charCode,
+            charCode: msg.charCode!,
           ),
         );
 
-      case NOTIFY_SECOND_CLOSE_BRACKET_FOUND:
+      case notifySecondCloseBracketFound:
         return StubbleResult(
           state: GetBlockEndState(
             blockName: 'with',
           ),
         );
 
-      case NOTIFY_BLOCK_END_RESULT:
+      case notifyBlockEndResult:
         _body = msg.value;
         return result(context);
     }
@@ -68,10 +68,10 @@ class GetWithBlockState extends StubbleState {
   StubbleResult result(StubbleContext context) {
     final result = StubbleResult();
 
-    if (_path == null || _path.isEmpty) {
+    if (_path.isEmpty) {
       result.err = StubbleError(
         text: 'With block required path to context data',
-        code: ERROR_PATH_NOT_SPECIFIED,
+        code: errorPathNotSpecified,
       );
     } else {
       try {
@@ -82,25 +82,25 @@ class GetWithBlockState extends StubbleState {
             final fn = context.compile(_body);
 
             return StubbleResult(
-              result: fn(data),
+              result: fn != null ? fn(data) : '',
               pop: true,
             );
           } else {
             result.err = StubbleError(
               text: '"With" block data should have "Map" type',
-              code: ERROR_WITH_DATA_MALFORMED,
+              code: errorWithDataMalformed,
             );
           }
         } else {
           result.err = StubbleError(
-            text: 'Can\'t get data from context by path "${_path}"',
-            code: ERROR_PATH_WRONG_SPECIFIED,
+            text: 'Can\'t get data from context by path "$_path"',
+            code: errorPathWrongSpecified,
           );
         }
       } catch (e) {
         result.err = StubbleError(
           text: e.toString(),
-          code: ERROR_CALLING_HELPER,
+          code: errorCallingHelper,
         );
       }
     }

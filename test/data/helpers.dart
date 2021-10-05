@@ -3,29 +3,30 @@ import 'package:stubble/stubble.dart';
 Stubble initHelpers() {
   final s = Stubble();
 
-  s.registerHelper('testHelper', (List attrs, Function fn) {
+  s.registerHelper('testHelper', (List attrs, Function? fn) {
     print(attrs);
 
-    attrs.forEach((attr) {
-      print('Attr value: ${attr}; Attr type: ${attr.runtimeType}');
-    });
+    for (var attr in attrs) {
+      print('Attr value: $attr; Attr type: ${attr.runtimeType}');
+    }
 
     return 'Helper executed sucessfuly';
   });
 
-  s.registerHelper('show', (List attrs, Function fn) {
+  s.registerHelper('show', (List attrs, Function? fn) {
     return attrs.toString();
   });
 
-  s.registerHelper('blockHelper', (List attrs, Function fn) {
-    return fn({'AA': 'it', 'BB': 'works'});
+  s.registerHelper('blockHelper', (List attrs, Function? fn) {
+    final data = {'AA': 'it', 'BB': 'works'};
+    return fn != null ? fn(data) : '';
   });
 
-  s.registerHelper('formatPrice', (List attrs, Function fn) {
+  s.registerHelper('formatPrice', (List attrs, Function? fn) {
     return '${attrs[0].toString()} \$';
   });
 
-  s.registerHelper('item_price', (List attrs, Function fn) {
+  s.registerHelper('item_price', (List attrs, Function? fn) {
     final item = attrs.first;
 
     if (item != null && item is Map) {
@@ -36,12 +37,12 @@ Stubble initHelpers() {
     return '';
   });
 
-  s.registerHelper('total_sum', (List attrs, Function fn) {
+  s.registerHelper('total_sum', (List attrs, Function? fn) {
     final List items = attrs.first;
     var sum = 0.0;
 
-    if (items != null && items.isNotEmpty) {
-      items.forEach((item) {
+    if (items.isNotEmpty) {
+      for (final item in items) {
         sum += item['price'] * item['quantity'];
 
         if (item['options'] != null && item['options'] is List) {
@@ -49,14 +50,13 @@ Stubble initHelpers() {
             sum += o['price'] * o['quantity'];
           });
         }
-      });
-
+      }
     }
 
-    return "<ds><b><row><cell>TOTAL</cell><cell align='right'>*${sum}</cell></row></b></ds><br>";
+    return "<ds><b><row><cell>TOTAL</cell><cell align='right'>*$sum</cell></row></b></ds><br>";
   });
 
-  s.registerHelper('order_date', (List attrs, Function fn) {
+  s.registerHelper('order_date', (List attrs, Function? fn) {
     final modified = attrs.first;
 
     if (modified != null && modified > 0) {
@@ -66,7 +66,7 @@ Stubble initHelpers() {
     return '';
   });
 
-  s.registerHelper('bill_date', (List attrs, Function fn) {
+  s.registerHelper('bill_date', (List attrs, Function? fn) {
     final modified = attrs.first;
 
     if (modified != null && modified > 0) {
@@ -76,39 +76,43 @@ Stubble initHelpers() {
     return '';
   });
 
-  s.registerHelper('items_list', (List attrs, Function fn) {
+  s.registerHelper('items_list', (List attrs, Function? fn) {
     final items = attrs.first;
     var res = '';
 
-    if (items != null && items is List) {
-      items.forEach((item) {
-        res += fn(item) + '\n';
-      });
+    if (fn != null) {
+      if (items != null && items is List) {
+        for (final item in items) {
+          res += fn(item) + '\n';
+        }
+      }
     }
 
     return res;
   });
 
-  s.registerHelper('options_list', (List attrs, Function fn) {
+  s.registerHelper('options_list', (List attrs, Function? fn) {
     final options = attrs.first;
     var res = '';
 
-    if (options != null && options is Map) {
-      options.forEach((key, opt) {
-        res += fn(opt) + ' ';
-      });
+    if (fn != null) {
+      if (options != null && options is Map) {
+        options.forEach((key, opt) {
+          res += fn(opt) + ' ';
+        });
+      }
     }
 
     return res;
   });
 
-  s.registerHelper('vat_list', (List attrs, Function fn) {
+  s.registerHelper('vat_list', (List attrs, Function? fn) {
     var vats = {};
     var res = '';
     final items = attrs.first;
 
-    if (items != null && items is List && items.isNotEmpty) {
-      items.forEach((item) {
+    if (fn != null && items != null && items is List && items.isNotEmpty) {
+      for (final item in items) {
         if (item.vat_value > 0) {
           var vat = item['vat_value'] / 100;
 
@@ -122,7 +126,7 @@ Stubble initHelpers() {
             };
           }
         }
-      });
+      }
 
       if (vats.isNotEmpty) {
         vats.forEach((k, vat) {

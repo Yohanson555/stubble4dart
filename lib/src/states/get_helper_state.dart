@@ -1,8 +1,9 @@
 part of stubble;
 
 class GetHelperState extends StubbleState {
-  String _helper;
-  List<dynamic> _attributes;
+  final List<dynamic> _attributes = [];
+  String _helper = '';
+  
 
   GetHelperState() {
     methods = {
@@ -13,22 +14,19 @@ class GetHelperState extends StubbleState {
   }
 
   StubbleResult init(InitMessage msg, StubbleContext context) {
-    _helper = '';
-    _attributes = [];
-
     return StubbleResult(
       state: GetBlockNameState(),
     );
   }
 
-  StubbleResult process(ProcessMessage msg, StubbleContext context) {
+  StubbleResult? process(ProcessMessage msg, StubbleContext context) {
     final charCode = msg.charCode;
 
-    if (charCode == CLOSE_BRACKET) {
+    if (charCode == closeBracket) {
       return StubbleResult(
         state: CloseBracketState(),
       );
-    } else if (charCode == SPACE) {
+    } else if (charCode == space) {
       return null;
     }
 
@@ -40,30 +38,36 @@ class GetHelperState extends StubbleState {
     );
   }
 
-  StubbleResult notify(NotifyMessage msg, StubbleContext context) {
+  StubbleResult? notify(NotifyMessage msg, StubbleContext context) {
     switch (msg.type) {
-      case NOTIFY_NAME_RESULT:
+      case notifyNameResult:
         _helper = msg.value;
 
-        return StubbleResult(
-          message: ProcessMessage(
-            charCode: msg.charCode,
-          ),
-        );
-      case NOTIFY_SECOND_CLOSE_BRACKET_FOUND:
+        if (msg.charCode != null) {
+          return StubbleResult(
+            message: ProcessMessage(
+              charCode: msg.charCode!,
+            ),
+          );
+        }
+        break;
+
+      case notifySecondCloseBracketFound:
         return result(context);
-      case NOTIFY_ATTR_RESULT:
+
+      case notifyAttrResult:
         _attributes.add(msg.value);
 
         if (msg.charCode != null) {
           return StubbleResult(
             message: ProcessMessage(
-              charCode: msg.charCode,
+              charCode: msg.charCode!,
             ),
           );
         }
 
         break;
+
       default:
         break;
     }
@@ -74,10 +78,12 @@ class GetHelperState extends StubbleState {
   StubbleResult result(StubbleContext context) {
     if (!context.callable(_helper)) {
       return StubbleResult(
-          pop: true,
-          err: StubbleError(
-              code: ERROR_HELPER_UNREGISTERED,
-              text: 'Helper "$_helper" is unregistered'));
+        pop: true,
+        err: StubbleError(
+          code: errorHelperUnregistered,
+          text: 'Helper "$_helper" is unregistered',
+        ),
+      );
     }
 
     final result = StubbleResult();
@@ -92,8 +98,9 @@ class GetHelperState extends StubbleState {
     } catch (e) {
       result.pop = true;
       result.err = StubbleError(
-          text: 'Error in helper function ${_helper}: ${e.toString()}',
-          code: ERROR_CALLING_HELPER);
+        text: 'Error in helper function $_helper: ${e.toString()}',
+        code: errorCallingHelper,
+      );
     }
 
     return result;

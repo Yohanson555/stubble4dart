@@ -21,18 +21,18 @@ class GetBlockSequenceTypeState extends StubbleState {
   }
 
   StubbleResult notify(NotifyMessage msg, StubbleContext context) {
-    if (msg.type == NOTIFY_NAME_RESULT) {
+    if (msg.type == notifyNameResult) {
       String blockName = msg.value;
 
       if (blockName.isEmpty) {
         return StubbleResult(
             err: StubbleError(
-                code: ERROR_BLOCK_NAME_WRONG_SPECIFIED,
+                code: errorBlockNameWrongSpecified,
                 text: 'Block name not specified'));
       } else {
         var res = StubbleResult(
           pop: true,
-          message: ProcessMessage(charCode: msg.charCode),
+          message: ProcessMessage(charCode: msg.charCode!),
         );
 
         switch (blockName) {
@@ -63,7 +63,7 @@ class GetBlockSequenceTypeState extends StubbleState {
 
     return StubbleResult(
       err: StubbleError(
-          code: ERROR_UNSUPPORTED_NOTIFY,
+          code: errorUnsupportedNotify,
           text:
               'State "$runtimeType" does not support notifies of type ${msg.type}'),
     );

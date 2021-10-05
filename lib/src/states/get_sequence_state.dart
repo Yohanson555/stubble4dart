@@ -12,28 +12,28 @@ class GetSequenceState extends StubbleState {
 
     final res = StubbleResult();
 
-    if (charCode == DOLLAR) {
+    if (charCode == dollar) {
       res.pop = true;
       res.message = NotifyMessage(
         charCode: charCode,
-        type: NOTIFY_IS_HELPER_SEQUENCE,
+        type: notifyIsHelperSequence,
       );
-    } else if (charCode == SHARP) {
+    } else if (charCode == sharp) {
       res.pop = true;
       res.message = NotifyMessage(
         charCode: charCode,
-        type: NOTIFY_IS_BLOCK_SEQUENCE,
+        type: notifyIsBlockSequence,
       );
     } else if ((charCode >= 65 && charCode <= 90) ||
         (charCode >= 97 && charCode <= 122)) {
       res.pop = true;
       res.message = NotifyMessage(
           charCode: charCode,
-          type: NOTIFY_IS_DATA_SEQUENCE,
+          type: notifyIsDataSequence,
           value: String.fromCharCode(charCode));
     } else {
       res.err = StubbleError(
-          code: ERROR_WRONG_SEQUENCE_CHARACTER,
+          code: errorWrongSequenceCharacter,
           text: 'Wrong character "${String.fromCharCode(charCode)}" found');
     }
 

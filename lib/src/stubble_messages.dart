@@ -22,13 +22,13 @@ class ProcessMessage extends StubbleMessage {
   String getName() => 'process';
 
   ProcessMessage({
-    this.charCode,
+    required this.charCode,
   });
 }
 
 class NotifyMessage extends StubbleMessage {
-  final int charCode;
-  final int type;
+  final int? charCode;
+  final int? type;
   final dynamic value;
 
   @override

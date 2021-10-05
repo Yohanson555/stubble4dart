@@ -8,7 +8,7 @@ class GetAttributeState extends StubbleState {
   StubbleResult process(ProcessMessage msg, StubbleContext context) {
     final charCode = msg.charCode;
 
-    if (charCode == QUOTE || charCode == SINGLE_QUOTE) {
+    if (charCode == quote || charCode == singleQuote) {
       return StubbleResult(
         pop: true,
         state: GetStringAttribute(quoteSymbol: charCode),
@@ -29,7 +29,7 @@ class GetAttributeState extends StubbleState {
     }
     return StubbleResult(
         err: StubbleError(
-            code: ERROR_GETTING_ATTRIBUTE,
+            code: errorGettingAttribute,
             text:
                 'Wrong attribute character "${String.fromCharCode(charCode)}"'));
   }

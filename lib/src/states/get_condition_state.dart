@@ -7,38 +7,38 @@ class GetConditionState extends StubbleState {
     methods = {'process': (msg, context) => process(msg, context)};
   }
 
-  StubbleResult process(ProcessMessage msg, StubbleContext context) {
+  StubbleResult? process(ProcessMessage msg, StubbleContext context) {
     final charCode = msg.charCode;
 
-    if (charCode == EOS) {
+    if (charCode == eos) {
       return StubbleResult(
           err: StubbleError(
-              code: ERROR_UNEXPECTED_END_OF_SOURCE,
+              code: errorUnexpectedEndOfSource,
               text: 'IF condition error: unexpected end of source')
       );
-    } else if (charCode == MORE ||
-        charCode == LESS ||
-        charCode == EQUAL ||
-        charCode == EXCL_MARK) {
+    } else if (charCode == more ||
+        charCode == less ||
+        charCode == equal ||
+        charCode == exclMark) {
       _condition += String.fromCharCode(charCode);
       return null;
-    } else if (charCode == CLOSE_BRACKET || charCode == SPACE) {
+    } else if (charCode == closeBracket || charCode == space) {
       if (_condition.isEmpty) {
         return StubbleResult(
             err: StubbleError(
-                code: ERROR_IF_BLOCK_CONDITION_MALFORMED,
+                code: errorIfBlockConditionMalformed,
                 text: 'If block condition should not be empty'));
       } else if (_condition.length > 2 || !(['==', '!=', '<', '>', '<=', '>='].contains(_condition))) {
         return StubbleResult(
             err: StubbleError(
-                code: ERROR_IF_BLOCK_CONDITION_MALFORMED,
+                code: errorIfBlockConditionMalformed,
                 text: 'If block condition malformed: "$_condition"'));
 
       } else {
         return StubbleResult(
             pop: true,
             message: NotifyMessage(
-                type: NOTIFY_CONDITION_RESULT,
+                type: notifyConditionResult,
                 value: _condition,
                 charCode: charCode));
       }
@@ -46,7 +46,7 @@ class GetConditionState extends StubbleState {
 
     return StubbleResult(
         err: StubbleError(
-            code: ERROR_GETTING_ATTRIBUTE,
+            code: errorGettingAttribute,
             text:
                 'Wrong condition character "${String.fromCharCode(charCode)}" ($charCode)'));
   }

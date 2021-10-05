@@ -16,14 +16,14 @@ class GetPathAttribute extends StubbleState {
     );
   }
 
-  StubbleResult notify(NotifyMessage msg, StubbleContext context) {
+  StubbleResult? notify(NotifyMessage msg, StubbleContext context) {
     switch (msg.type) {
-      case NOTIFY_PATH_RESULT:
+      case notifyPathResult:
         return StubbleResult(
             pop: true,
             message: NotifyMessage(
               charCode: msg.charCode,
-              type: NOTIFY_ATTR_RESULT,
+              type: notifyAttrResult,
               value: context.get(msg.value),
             ));
     }

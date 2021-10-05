@@ -8,25 +8,21 @@ class StubbleState {
 
   /// Checks if state can accept messages of this type.
   bool canAcceptMessage(StubbleMessage msg) {
-    if (msg != null) {
-      final messageName = msg.getName();
+    final messageName = msg.getName();
 
-      if (methods[messageName] != null) {
-        return true;
-      }
+    if (methods[messageName] != null) {
+      return true;
     }
 
     return false;
   }
 
   /// Processing message
-  StubbleResult processMessage(StubbleMessage msg, StubbleContext context) {
-    if (msg != null) {
-      final messageName = msg.getName();
+  StubbleResult? processMessage(StubbleMessage msg, StubbleContext context) {
+    final messageName = msg.getName();
 
-      if (methods[messageName] != null) {
-        return methods[messageName](msg, context);
-      }
+    if (methods[messageName] != null) {
+      return methods[messageName]!(msg, context);
     }
 
     return null;

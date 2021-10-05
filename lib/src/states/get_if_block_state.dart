@@ -5,26 +5,26 @@ class GetIfBlockState extends StubbleState {
   final int line;
 
   bool _res = false;
-  String _body;
+  String _body = '';
 
-  GetIfBlockState({this.symbol, this.line}) {
+  GetIfBlockState({required this.symbol, required this.line}) {
     methods = {
       'process': (msg, context) => process(msg, context),
       'notify': (msg, context) => notify(msg, context),
     };
   }
 
-  StubbleResult process(ProcessMessage msg, StubbleContext context) {
+  StubbleResult? process(ProcessMessage msg, StubbleContext context) {
     final charCode = msg.charCode;
 
-    if (charCode == EOS) {
+    if (charCode == eos) {
       return StubbleResult(
           err: StubbleError(
-              code: ERROR_UNTERMINATED_BLOCK,
+              code: errorUnterminatedBlock,
               text: 'Unterminated "IF" block at $line:$symbol'));
-    } else if (charCode == SPACE) {
+    } else if (charCode == space) {
       return null;
-    } else if (charCode == CLOSE_BRACKET) {
+    } else if (charCode == closeBracket) {
       return StubbleResult(
         state: CloseBracketState(),
       );
@@ -36,35 +36,35 @@ class GetIfBlockState extends StubbleState {
     );
   }
 
-  StubbleResult notify(NotifyMessage msg, StubbleContext context) {
+  StubbleResult? notify(NotifyMessage msg, StubbleContext context) {
     switch (msg.type) {
-      case NOTIFY_CONDITION_RESULT:
+      case notifyConditionResult:
         _res = msg.value ?? false;
 
         if (msg.charCode != null) {
           return StubbleResult(
             message: ProcessMessage(
-              charCode: msg.charCode,
+              charCode: msg.charCode!,
             ),
           );
         }
 
         break;
-      case NOTIFY_SECOND_CLOSE_BRACKET_FOUND:
+      case notifySecondCloseBracketFound:
         return StubbleResult(
           state: GetBlockEndState(
             blockName: 'if',
           ),
         );
 
-      case NOTIFY_BLOCK_END_RESULT:
+      case notifyBlockEndResult:
         _body = msg.value;
         return result(context);
 
       default:
         return StubbleResult(
           err: StubbleError(
-            code: ERROR_UNSUPPORTED_NOTIFY,
+            code: errorUnsupportedNotify,
             text:
                 'State "$runtimeType" does not support notifies of type ${msg.type}',
           ),
@@ -80,11 +80,17 @@ class GetIfBlockState extends StubbleState {
     if (_res == true) {
       try {
         final fn = context.compile(_body);
-        res = fn(context.data);
+
+        if (fn != null) {
+          res = fn(context.data);
+        }
       } catch (e) {
         return StubbleResult(
-            err: StubbleError(
-                code: ERROR_IF_BLOCK_MALFORMED, text: 'If block error: $e'));
+          err: StubbleError(
+            code: errorIfBlockMalformed,
+            text: 'If block error: $e',
+          ),
+        );
       }
     }
 

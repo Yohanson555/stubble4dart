@@ -2,17 +2,17 @@ part of stubble;
 
 /// types of notify messages
 
-const NOTIFY_SECOND_OPEN_BRACKET_FOUND = 1;
-const NOTIFY_SECOND_CLOSE_BRACKET_FOUND = 2;
-const NOTIFY_IS_HELPER_SEQUENCE = 3;
-const NOTIFY_IS_BLOCK_SEQUENCE = 4;
-const NOTIFY_IS_DATA_SEQUENCE = 5;
-const NOTIFY_IS_BLOCK_HELPER_SEQUENCE = 6;
-const NOTIFY_IS_IF_BLOCK_SEQUENCE = 7;
-const NOTIFY_IS_EACH_BLOCK_SEQUENCE = 8;
-const NOTIFY_IS_WITH_SEQUENCE = 9;
-const NOTIFY_PATH_RESULT = 10;
-const NOTIFY_NAME_RESULT = 11;
-const NOTIFY_ATTR_RESULT = 12;
-const NOTIFY_BLOCK_END_RESULT = 13;
-const NOTIFY_CONDITION_RESULT = 14;
+const notifySecondOpenBracketFound = 1;
+const notifySecondCloseBracketFound = 2;
+const notifyIsHelperSequence = 3;
+const notifyIsBlockSequence = 4;
+const notifyIsDataSequence = 5;
+const notifyIsBlockHelperSequence = 6;
+const notifyIsIfBlockSequence = 7;
+const notifyIsEqchBlockSequence = 8;
+const notifyIsWithSequence = 9;
+const notifyPathResult = 10;
+const notifyNameResult = 11;
+const notifyAttrResult = 12;
+const notifyBlockEndResult = 13;
+const notifyConditionResult = 14;

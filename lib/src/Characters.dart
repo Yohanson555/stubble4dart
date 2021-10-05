@@ -2,20 +2,20 @@ part of stubble;
 
 /// code of special characters
 
-const BACK_SLASH = 92; // \
-const SLASH = 47; // /
-const ENTER = 10; // '\n'
-const SPACE = 32; // ' '
-const OPEN_BRACKET = 123; // {
-const CLOSE_BRACKET = 125; // }
-const DOLLAR = 36; // $
-const SHARP = 35; // #
-const UNDERSCORE = 95; // _
-const DOT = 46; // .
-const QUOTE = 34; // "
-const SINGLE_QUOTE = 39; // '
-const EOS = -1; // '
-const MORE = 62; // >
-const LESS = 60; // <
-const EQUAL = 61; // =
-const EXCL_MARK = 33; // !
+const backSlash = 92; // \
+const slash = 47; // /
+const enter = 10; // '\n'
+const space = 32; // ' '
+const openBracket = 123; // {
+const closeBracket = 125; // }
+const dollar = 36; // $
+const sharp = 35; // #
+const underscore = 95; // _
+const dot = 46; // .
+const quote = 34; // "
+const singleQuote = 39; // '
+const eos = -1; // '
+const more = 62; // >
+const less = 60; // <
+const equal = 61; // =
+const exclMark = 33; // !

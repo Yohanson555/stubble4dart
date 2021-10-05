@@ -1,45 +1,46 @@
 library stubble;
 
-import 'package:meta/meta.dart';
-
-part './src/Characters.dart';
-part './src/Errors.dart';
-part './src/Notify.dart';
-part './src/StubbleContext.dart';
-part './src/StubbleError.dart';
-part './src/StubbleMachine.dart';
-part './src/StubbleMessages.dart';
-part './src/StubbleResult.dart';
-part './src/StubbleState.dart';
-part './src/states/CloseBracketState.dart';
-part './src/states/GetAttributeState.dart';
-part './src/states/GetBlockEndState.dart';
-part './src/states/GetBlockHelperState.dart';
-part './src/states/RootState.dart';
-part './src/states/OpenBracketState.dart';
-part './src/states/GetWithBlockState.dart';
-part './src/states/GetStringAttribute.dart';
-part './src/states/GetSequenceState.dart';
-part './src/states/GetPathState.dart';
-part './src/states/GetPathAttribute.dart';
-part './src/states/GetNumberAttribute.dart';
-part './src/states/GetIfConditionState.dart';
-part './src/states/GetIfBlockState.dart';
-part './src/states/GetHelperState.dart';
-part './src/states/GetEachBlockState.dart';
-part './src/states/GetDataState.dart';
-part './src/states/GetConditionState.dart';
-part './src/states/GetBlockSequenceTypeState.dart';
-part './src/states/GetBlockNameState.dart';
+part 'src/characters.dart';
+part 'src/errors_types.dart';
+part 'src/notify.dart';
+part 'src/stubble_context.dart';
+part 'src/stubble_error.dart';
+part 'src/stubble_machine.dart';
+part 'src/stubble_messages.dart';
+part 'src/stubble_result.dart';
+part 'src/stubble_state.dart';
+part 'src/states/close_bracket_state.dart';
+part 'src/states/get_attribute_state.dart';
+part 'src/states/get_block_end_state.dart';
+part 'src/states/get_block_helper_state.dart';
+part 'src/states/get_block_name_state.dart';
+part 'src/states/get_block_sequence_type_state.dart';
+part 'src/states/get_condition_state.dart';
+part 'src/states/get_data_state.dart';
+part 'src/states/get_each_block_state.dart';
+part 'src/states/get_helper_state.dart';
+part 'src/states/get_if_block_state.dart';
+part 'src/states/get_if_condition_state.dart';
+part 'src/states/get_number_attribute.dart';
+part 'src/states/get_path_attribute.dart';
+part 'src/states/get_path_state.dart';
+part 'src/states/get_sequence_state.dart';
+part 'src/states/get_string_attribute.dart';
+part 'src/states/get_with_block_state.dart';
+part 'src/states/open_bracket_state.dart';
+part 'src/states/root_state.dart';
 
 class Stubble {
-  final Map<String, Function(List<dynamic>, Function)> _helpers = {};
+  final Map<String, Function(List<dynamic>, Function?)> _helpers = {};
   final Map<String, dynamic> _options = {
     'ignoreUnregisteredHelperErrors': false,
     'ignoreTagCaseSensetive': false
   };
 
-  Stubble([Map<String, dynamic> options, Map<String, Function(List<dynamic>, Function)> helpers]) {
+  Stubble([
+    Map<String, dynamic>? options,
+    Map<String, Function(List<dynamic>, Function?)>? helpers,
+  ]) {
     if (helpers != null) {
       _helpers.addAll(helpers);
     }
@@ -50,15 +51,20 @@ class Stubble {
   }
 
   /// returns a compiler function that starts StubbleMachine with given template on call
-  Function compile(String template) {
+  Function compile(String? template) {
     if (template == null || template.isEmpty) {
       throw Exception('Can\'t create compiller with empty template');
     }
 
     final machine = StubbleMachine(template);
 
-    return (Map data) {
-      final context = StubbleContext(data, _helpers, _options, (String tpl) => compile(tpl));
+    return (Map? data) {
+      final context = StubbleContext(
+        data,
+        _helpers,
+        _options,
+        (String tpl) => compile(tpl),
+      );
 
       final result = machine.run(context);
 
@@ -67,9 +73,8 @@ class Stubble {
   }
 
   /// registers a helper function that can be used in templates. All helpers are available across the all template
-  bool registerHelper(
-      String name, Function(List<dynamic>, Function) helper) {
-    if (name == null || name.isEmpty) {
+  bool registerHelper(String name, Function(List<dynamic>, Function?) helper) {
+    if (name.isEmpty) {
       throw Exception('Helper\'s name should be provided');
     } else {
       var regExp = RegExp(
@@ -81,10 +86,6 @@ class Stubble {
       if (!regExp.hasMatch(name)) {
         throw Exception('Wrong helper name specified');
       }
-    }
-
-    if (helper == null) {
-      throw Exception('Helper\'s function should be provided');
     }
 
     if (!_helpers.containsKey(name)) {
@@ -113,7 +114,7 @@ class Stubble {
   }
 
   int get helperCount {
-    return _helpers != null ? _helpers.length : 0;
+    return _helpers.length;
   }
 
   void setOption(String name, dynamic value) {

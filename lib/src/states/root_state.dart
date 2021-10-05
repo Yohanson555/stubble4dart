@@ -10,11 +10,11 @@ class RootState extends StubbleState {
     };
   }
 
-  StubbleResult process(ProcessMessage msg, StubbleContext context) {
+  StubbleResult? process(ProcessMessage msg, StubbleContext context) {
     final res = StubbleResult();
     final charCode = msg.charCode;
 
-    if (charCode == EOS) return null;
+    if (charCode == eos) return null;
 
     if (escape) {
       escape = false;
@@ -22,10 +22,10 @@ class RootState extends StubbleState {
       res.result = String.fromCharCode(charCode);
     } else {
       switch (charCode) {
-        case BACK_SLASH:
+        case backSlash:
           escape = true;
           break;
-        case OPEN_BRACKET:
+        case openBracket:
           res.state = OpenBracketState();
           break;
         default:
@@ -40,18 +40,18 @@ class RootState extends StubbleState {
     final res = StubbleResult();
 
     switch (msg.type) {
-      case NOTIFY_SECOND_OPEN_BRACKET_FOUND: // done
+      case notifySecondOpenBracketFound: // done
         res.state = GetSequenceState();
         break;
-      case NOTIFY_IS_HELPER_SEQUENCE: // done
+      case notifyIsHelperSequence: // done
         res.message = InitMessage();
         res.state = GetHelperState();
         break;
-      case NOTIFY_IS_BLOCK_SEQUENCE: // done
+      case notifyIsBlockSequence: // done
         res.message = InitMessage();
         res.state = GetBlockSequenceTypeState();
         break;
-      case NOTIFY_IS_DATA_SEQUENCE: // done
+      case notifyIsDataSequence: // done
         res.state = GetDataState();
         res.message = InitMessage(value: msg.value);
         break;
