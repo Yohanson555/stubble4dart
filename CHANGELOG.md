@@ -18,3 +18,7 @@ Some code cosmetic changes
 ## 1.0.3
 
 Now with null-safety
+
+## v 1.1.0
+
+- nested same named blocks available now

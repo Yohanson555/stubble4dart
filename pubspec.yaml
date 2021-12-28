@@ -1,6 +1,6 @@
 name: stubble
 description: Simplified version of the Handlebars template engine for Dart.
-version: 1.0.3
+version: 1.1.0
 homepage: https://github.com/Yohanson555/stubble4dart
 
 environment:

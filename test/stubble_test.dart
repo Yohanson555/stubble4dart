@@ -772,7 +772,7 @@ void main() {
       int multy = attrs[1];
 
       var res = '';
-      
+
       if (fn != null) {
         for (int i = 0; i < count; i++) {
           res += fn({'index': i + 1, 'multy': multy}) + ';';
@@ -988,6 +988,18 @@ void main() {
       expect(res, 'true');
     });
 
+    test('Calling nested IF', () {
+      final tpl =
+          '{{#if A == 1}}A{{#if B == 2}}-B{{#if C == 4}}-C{{/if}}{{/if}}{{/if}}';
+      final res = stubble.compile(tpl)({
+        'A': 1,
+        'B': 2,
+        'C': 3,
+      });
+
+      expect(res, 'A-B');
+    });
+
     /// incorrect if blocks
     ///
     test('Wrong IF block #1', () {
@@ -1197,6 +1209,32 @@ void main() {
       };
 
       expect(stubble.compile(tpl)(data), '1;2;3;4;');
+    });
+
+    test('Calling nested EACH', () {
+      final tpl = '{{#each A}}{{n}}:{{#each B}}{{n}};{{/each}}{{/each}}';
+      final data = {
+        'A': [
+          {
+            'n': 'A1',
+            'B': [
+              {'n': 'B1'},
+              {'n': 'B2'},
+              {'n': 'B3'}
+            ]
+          },
+          {
+            'n': 'A2',
+            'B': [
+              {'n': 'B4'},
+              {'n': 'B5'},
+              {'n': 'B6'}
+            ]
+          }
+        ]
+      };
+
+      expect(stubble.compile(tpl)(data), 'A1:B1;B2;B3;A2:B4;B5;B6;');
     });
 
     test('Calling EACH block without path', () {
