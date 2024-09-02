@@ -32,10 +32,7 @@ part 'src/states/root_state.dart';
 
 class Stubble {
   final Map<String, Function(List<dynamic>, Function?)> _helpers = {};
-  final Map<String, dynamic> _options = {
-    'ignoreUnregisteredHelperErrors': false,
-    'ignoreTagCaseSensetive': false
-  };
+  final Map<String, dynamic> _options = {'ignoreUnregisteredHelperErrors': false, 'ignoreTagCaseSensetive': false};
 
   Stubble([
     Map<String, dynamic>? options,
@@ -52,10 +49,6 @@ class Stubble {
 
   /// returns a compiler function that starts StubbleMachine with given template on call
   Function compile(String? template) {
-    if (template == null || template.isEmpty) {
-      throw Exception('Can\'t create compiller with empty template');
-    }
-
     final machine = StubbleMachine(template);
 
     return (Map? data) {

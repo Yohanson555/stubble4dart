@@ -13,47 +13,10 @@ void main() {
       final stubble = Stubble();
 
       test(
-        'Creating a compiller with empty template',
-        () {
-          expect(
-            () => stubble.compile(null),
-            throwsA(
-              predicate((e) =>
-                  e is Exception &&
-                  e.toString() ==
-                      'Exception: Can\'t create compiller with empty template'),
-            ),
-          );
-        },
-      );
-
-      test(
-        'Creating a stubble machine with empty template',
-        () {
-          var sm = StubbleMachine(null);
-
-          expect(
-            sm.run(StubbleContext()),
-            '',
-          );
-        },
-      );
-
-      test(
-        'Creating a compiller with non empty template',
+        'Test compilation with previous compiler function',
         () {
           compiler = stubble.compile('Test template');
 
-          expect(
-            compiler is Function,
-            true,
-          );
-        },
-      );
-
-      test(
-        'Test compilation with previous compiler function',
-        () {
           expect(
             compiler({}),
             'Test template',
@@ -67,10 +30,7 @@ void main() {
           expect(
             () => stubble.registerHelper('', (data, fn) {}),
             throwsA(
-              predicate((e) =>
-                  e is Exception &&
-                  e.toString() ==
-                      'Exception: Helper\'s name should be provided'),
+              predicate((e) => e is Exception && e.toString() == 'Exception: Helper\'s name should be provided'),
             ),
           );
         },
@@ -82,9 +42,7 @@ void main() {
           expect(
             () => stubble.registerHelper('555SaveMe', (data, fn) {}),
             throwsA(
-              predicate((e) =>
-                  e is Exception &&
-                  e.toString() == 'Exception: Wrong helper name specified'),
+              predicate((e) => e is Exception && e.toString() == 'Exception: Wrong helper name specified'),
             ),
           );
         },
@@ -94,12 +52,9 @@ void main() {
         'Registering a new helper function with wrong name specified #2',
         () {
           expect(
-            () => stubble.registerHelper(
-                'Let\'s get party started', (data, fn) {}),
+            () => stubble.registerHelper('Let\'s get party started', (data, fn) {}),
             throwsA(
-              predicate((e) =>
-                  e is Exception &&
-                  e.toString() == 'Exception: Wrong helper name specified'),
+              predicate((e) => e is Exception && e.toString() == 'Exception: Wrong helper name specified'),
             ),
           );
         },
@@ -111,9 +66,7 @@ void main() {
           expect(
             () => stubble.registerHelper(')(*&%#', (data, fn) {}),
             throwsA(
-              predicate((e) =>
-                  e is Exception &&
-                  e.toString() == 'Exception: Wrong helper name specified'),
+              predicate((e) => e is Exception && e.toString() == 'Exception: Wrong helper name specified'),
             ),
           );
         },
@@ -276,8 +229,7 @@ void main() {
 
         final context = StubbleContext(null, helpers);
 
-        expect(context.call('simple', [1, 'String attr', {}, false], null),
-            'Number of attributes is 4');
+        expect(context.call('simple', [1, 'String attr', {}, false], null), 'Number of attributes is 4');
       },
     );
 
@@ -292,8 +244,7 @@ void main() {
 
         final context = StubbleContext(null, helpers);
 
-        expect(context.call('simple', [1, 'String attr', {}, false], null),
-            'Second attribute is String attr');
+        expect(context.call('simple', [1, 'String attr', {}, false], null), 'Second attribute is String attr');
       },
     );
 
@@ -313,9 +264,7 @@ void main() {
         expect(
           () => context.call('', [], null),
           throwsA(
-            predicate((e) =>
-                e is Exception &&
-                e.toString() == 'Exception: Helper name not specified'),
+            predicate((e) => e is Exception && e.toString() == 'Exception: Helper name not specified'),
           ),
         );
       },
@@ -330,9 +279,7 @@ void main() {
         expect(
           () => context.call('simple', [], null),
           throwsA(
-            predicate((e) =>
-                e is Exception &&
-                e.toString() == 'Exception: Helper "simple" is not registered'),
+            predicate((e) => e is Exception && e.toString() == 'Exception: Helper "simple" is not registered'),
           ),
         );
       },
@@ -387,84 +334,52 @@ void main() {
     });
 
     test('Incorrect path insert template #1', () {
-      expect(
-          () => stubble.compile('Everything is {{ state }}')(null),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (5) on 1:16 Wrong character " " found')));
+      expect(() => stubble.compile('Everything is {{ state }}')(null),
+          throwsA(predicate((e) => e is Exception && e.toString() == 'Exception: Error (5) on 1:16 Wrong character " " found')));
     });
 
     test('Incorrect path insert template #2', () {
-      expect(
-          () => stubble.compile('Everything is {{123state }}')(null),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (5) on 1:16 Wrong character "1" found')));
+      expect(() => stubble.compile('Everything is {{123state }}')(null),
+          throwsA(predicate((e) => e is Exception && e.toString() == 'Exception: Error (5) on 1:16 Wrong character "1" found')));
     });
 
     test('Incorrect path insert template #3', () {
-      expect(
-          () => stubble.compile('Everything is {{_state }}')(null),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (5) on 1:16 Wrong character "_" found')));
+      expect(() => stubble.compile('Everything is {{_state }}')(null),
+          throwsA(predicate((e) => e is Exception && e.toString() == 'Exception: Error (5) on 1:16 Wrong character "_" found')));
     });
 
     test('Incorrect path insert template #4', () {
-      expect(
-          () => stubble.compile('Everything is {{^(*)} }}')(null),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (5) on 1:16 Wrong character "^" found')));
+      expect(() => stubble.compile('Everything is {{^(*)} }}')(null),
+          throwsA(predicate((e) => e is Exception && e.toString() == 'Exception: Error (5) on 1:16 Wrong character "^" found')));
     });
 
     test('Incorrect path insert template #5', () {
-      expect(
-          () => stubble.compile('Everything is {{ }}')(null),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (5) on 1:16 Wrong character " " found')));
+      expect(() => stubble.compile('Everything is {{ }}')(null),
+          throwsA(predicate((e) => e is Exception && e.toString() == 'Exception: Error (5) on 1:16 Wrong character " " found')));
     });
 
     test('Incorrect path insert template #6', () {
-      expect(
-          () => stubble.compile('Everything is {{}}')(null),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (5) on 1:16 Wrong character "}" found')));
+      expect(() => stubble.compile('Everything is {{}}')(null),
+          throwsA(predicate((e) => e is Exception && e.toString() == 'Exception: Error (5) on 1:16 Wrong character "}" found')));
     });
 
     test('Incorrect path insert template #7', () {
-      expect(
-          () => stubble.compile('Everything is {{A B}}')(null),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (6) on 1:18 Wrong character "B" found')));
+      expect(() => stubble.compile('Everything is {{A B}}')(null),
+          throwsA(predicate((e) => e is Exception && e.toString() == 'Exception: Error (6) on 1:18 Wrong character "B" found')));
     });
 
     test('Incorrect path insert template #8', () {
       expect(
           () => stubble.compile('Everything is {A}}')(null),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (1) on 1:15 Wrong character is given. Expected "{"')));
+          throwsA(
+              predicate((e) => e is Exception && e.toString() == 'Exception: Error (1) on 1:15 Wrong character is given. Expected "{"')));
     });
 
     test('Incorrect path insert template #9', () {
       expect(
           () => stubble.compile('Everything is {{A} asd')(null),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (2) on 1:18 Wrong character is given. Expected "}"')));
+          throwsA(
+              predicate((e) => e is Exception && e.toString() == 'Exception: Error (2) on 1:18 Wrong character is given. Expected "}"')));
     });
 
     test('Nested path test', () {
@@ -481,28 +396,22 @@ void main() {
     test('Wrong path test #1: starts with dot', () {
       expect(
           () => stubble.compile('{{#with .someValue}}{{/#with}}')(null),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (7) on 1:8 Path should not start with point character')));
+          throwsA(predicate(
+              (e) => e is Exception && e.toString() == 'Exception: Error (7) on 1:8 Path should not start with point character')));
     });
 
     test('Wrong path test #2: ends with dot', () {
       expect(
           () => stubble.compile('{{#with someValue.}}{{/#with}}')(null),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (7) on 1:18 Path should not end with dot character')));
+          throwsA(
+              predicate((e) => e is Exception && e.toString() == 'Exception: Error (7) on 1:18 Path should not end with dot character')));
     });
 
     test('Wrong path test #3: starts with number', () {
       expect(
           () => stubble.compile('{{#with 123someValue}}{{/with}}')(null),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (7) on 1:8 Path should not start with number character')));
+          throwsA(predicate(
+              (e) => e is Exception && e.toString() == 'Exception: Error (7) on 1:8 Path should not start with number character')));
     });
 
     test('Correct templates', () {
@@ -569,17 +478,12 @@ void main() {
       expect(
         () => stubble.compile('{{\$helperName}}')(null),
         throwsA(
-          predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (18) on 1:14 Helper "helperName" is unregistered'),
+          predicate((e) => e is Exception && e.toString() == 'Exception: Error (18) on 1:14 Helper "helperName" is unregistered'),
         ),
       );
     });
 
-    test(
-        'Non-block helper call without registering it and "ignoreUnregisteredHelperErrors" option on',
-        () {
+    test('Non-block helper call without registering it and "ignoreUnregisteredHelperErrors" option on', () {
       final st = Stubble({'ignoreUnregisteredHelperErrors': true}, null);
 
       expect(st.compile('A {{\$helperName}} B')(null), 'A  B');
@@ -594,35 +498,26 @@ void main() {
     });
 
     test('Correct non-block helper call without attributes #2', () {
-      expect(stubble.compile('{{\$_simpleHelper}}')({}),
-          'Simple helper with first start slash result');
+      expect(stubble.compile('{{\$_simpleHelper}}')({}), 'Simple helper with first start slash result');
     });
 
     test('Correct non-block helper call without attributes #3', () {
-      expect(stubble.compile('{{\$simpleHelper_}}')({}),
-          'Simple helper with last start slash result');
+      expect(stubble.compile('{{\$simpleHelper_}}')({}), 'Simple helper with last start slash result');
     });
 
     test('Correct non-block helper call with attributes #1', () {
-      expect(stubble.compile('{{\$attrCountHelper "first" 23 10.01 }}')({}),
-          'Attrs count: 3');
+      expect(stubble.compile('{{\$attrCountHelper "first" 23 10.01 }}')({}), 'Attrs count: 3');
     });
 
     test('Correct non-block helper call with attributes #2', () {
-      expect(
-          stubble.compile('{{\$attrCountHelper path "first" 23 10.01 }}')({}),
-          'Attrs count: 4');
+      expect(stubble.compile('{{\$attrCountHelper path "first" 23 10.01 }}')({}), 'Attrs count: 4');
     });
 
     test('Correct non-block helper call with attributes #3', () {
-      expect(stubble.compile('{{\$attrByNum 0 "first" 23 10.01 }}')({}),
-          'Attrs is: 0');
-      expect(stubble.compile('{{\$attrByNum 1 "first" 23 10.01 }}')({}),
-          'Attrs is: first');
-      expect(stubble.compile('{{\$attrByNum 2 "first" 23 10.01 }}')({}),
-          'Attrs is: 23');
-      expect(stubble.compile('{{\$attrByNum 3 "first" 23 10.01 }}')({}),
-          'Attrs is: 10.01');
+      expect(stubble.compile('{{\$attrByNum 0 "first" 23 10.01 }}')({}), 'Attrs is: 0');
+      expect(stubble.compile('{{\$attrByNum 1 "first" 23 10.01 }}')({}), 'Attrs is: first');
+      expect(stubble.compile('{{\$attrByNum 2 "first" 23 10.01 }}')({}), 'Attrs is: 23');
+      expect(stubble.compile('{{\$attrByNum 3 "first" 23 10.01 }}')({}), 'Attrs is: 10.01');
     });
 
     test('Calling "attrByNum" helper with out attributes', () {
@@ -631,8 +526,7 @@ void main() {
         throwsA(
           predicate((e) =>
               e is Exception &&
-              e.toString() ==
-                  'Exception: Error (9) on 1:13 Error in helper function attrByNum: Exception: Index is undefined'),
+              e.toString() == 'Exception: Error (9) on 1:13 Error in helper function attrByNum: Exception: Index is undefined'),
         ),
       );
     });
@@ -643,8 +537,7 @@ void main() {
         throwsA(
           predicate((e) =>
               e is Exception &&
-              e.toString() ==
-                  'Exception: Error (9) on 1:18 Error in helper function attrByNum: Exception: Index is not an int'),
+              e.toString() == 'Exception: Error (9) on 1:18 Error in helper function attrByNum: Exception: Index is not an int'),
         ),
       );
     });
@@ -653,10 +546,7 @@ void main() {
       expect(
         () => stubble.compile('{{\$ attrByNum}}')(null),
         throwsA(
-          predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (8) on 1:3 Block name is empty'),
+          predicate((e) => e is Exception && e.toString() == 'Exception: Error (8) on 1:3 Block name is empty'),
         ),
       );
     });
@@ -665,10 +555,8 @@ void main() {
       expect(
         () => stubble.compile('{{\$123attrByNum}}')(null),
         throwsA(
-          predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (8) on 1:3 Block name should not start with number character'),
+          predicate(
+              (e) => e is Exception && e.toString() == 'Exception: Error (8) on 1:3 Block name should not start with number character'),
         ),
       );
     });
@@ -677,10 +565,7 @@ void main() {
       expect(
         () => stubble.compile('{{\$attrByNum123}}')(null),
         throwsA(
-          predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (18) on 1:16 Helper "attrByNum123" is unregistered'),
+          predicate((e) => e is Exception && e.toString() == 'Exception: Error (18) on 1:16 Helper "attrByNum123" is unregistered'),
         ),
       );
     });
@@ -689,10 +574,7 @@ void main() {
       expect(
         () => stubble.compile('{{\$#attrByNum}}')(null),
         throwsA(
-          predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (3) on 1:3 Character "#" is not a valid in block name'),
+          predicate((e) => e is Exception && e.toString() == 'Exception: Error (3) on 1:3 Character "#" is not a valid in block name'),
         ),
       );
     });
@@ -701,10 +583,7 @@ void main() {
       expect(
         () => stubble.compile('{{\$attrByNum 0.23.1 }}')(null),
         throwsA(
-          predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (11) on 1:17 Duplicate number delimiter'),
+          predicate((e) => e is Exception && e.toString() == 'Exception: Error (11) on 1:17 Duplicate number delimiter'),
         ),
       );
     });
@@ -713,10 +592,7 @@ void main() {
       expect(
         () => stubble.compile('{{\$attrByNum 0.23A }}')(null),
         throwsA(
-          predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (11) on 1:17 Number attribute malformed'),
+          predicate((e) => e is Exception && e.toString() == 'Exception: Error (11) on 1:17 Number attribute malformed'),
         ),
       );
     });
@@ -725,10 +601,7 @@ void main() {
       expect(
         () => stubble.compile('{{\$attrByNum "test{" }}')(null),
         throwsA(
-          predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (19) on 1:18 Wrong attribute value character "{"'),
+          predicate((e) => e is Exception && e.toString() == 'Exception: Error (19) on 1:18 Wrong attribute value character "{"'),
         ),
       );
     });
@@ -798,104 +671,70 @@ void main() {
     });
 
     test('Calling simple block helper #1', () {
-      expect(
-          stubble.compile(
-              '{{#simpleBlockHelper}}{{A}}; {{B}}{{/simpleBlockHelper}}')({}),
-          'First param; Second param');
+      expect(stubble.compile('{{#simpleBlockHelper}}{{A}}; {{B}}{{/simpleBlockHelper}}')({}), 'First param; Second param');
     });
 
     test('Calling simple block helper #2', () {
-      expect(
-          stubble.compile(
-              '{{#simpleBlockHelper}}{{A}}; {{B}}{{/simpleBlockHelper}}')({}),
-          'First param; Second param');
+      expect(stubble.compile('{{#simpleBlockHelper}}{{A}}; {{B}}{{/simpleBlockHelper}}')({}), 'First param; Second param');
     });
 
     test('Calling simple block helper with attrs', () {
-      expect(
-          stubble.compile(
-              '{{#manyStrings 3}}{{index}}. String number {{index}}{{/manyStrings}}')({}),
+      expect(stubble.compile('{{#manyStrings 3}}{{index}}. String number {{index}}{{/manyStrings}}')({}),
           '1. String number 1;2. String number 2;3. String number 3;');
     });
 
     test('Calling simple block helper with attrs and inner helper calls', () {
-      expect(
-          stubble.compile(
-              '{{#multyStrings 3 2}}{{index}}. String number {{\$multiply index multy}}{{/multyStrings}}')({}),
+      expect(stubble.compile('{{#multyStrings 3 2}}{{index}}. String number {{\$multiply index multy}}{{/multyStrings}}')({}),
           '1. String number 2;2. String number 4;3. String number 6;');
     });
 
     test('Calling non registered block helper', () {
-      expect(
-          () => stubble.compile('{{#getPrice 3 2}}{{price}}}{{/getPrice}}')({}),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (18) on 1:39 Helper "getPrice" is unregistered')));
+      expect(() => stubble.compile('{{#getPrice 3 2}}{{price}}}{{/getPrice}}')({}),
+          throwsA(predicate((e) => e is Exception && e.toString() == 'Exception: Error (18) on 1:39 Helper "getPrice" is unregistered')));
     });
 
     test('Calling block helper that throws an error', () {
       expect(
-          () => stubble
-              .compile('{{#errorHelper 3 2}}{{price}}}{{/errorHelper}}')({}),
+          () => stubble.compile('{{#errorHelper 3 2}}{{price}}}{{/errorHelper}}')({}),
           throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (9) on 1:45 Helper "errorHelper" error: Exception: Helper error!')));
+              e is Exception && e.toString() == 'Exception: Error (9) on 1:45 Helper "errorHelper" error: Exception: Helper error!')));
     });
 
     test('Unterminatred block helper #1', () {
       expect(
-          () => stubble.compile(
-              '{{#multyStrings 3 2}}{{index}}. String number {{\$multiply index multy}}{{/multyStrings')({}),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (17) on 1:85 Unterminated block helper "multyStrings" at 1:15')));
+          () => stubble.compile('{{#multyStrings 3 2}}{{index}}. String number {{\$multiply index multy}}{{/multyStrings')({}),
+          throwsA(predicate(
+              (e) => e is Exception && e.toString() == 'Exception: Error (17) on 1:85 Unterminated block helper "multyStrings" at 1:15')));
     });
 
     test('Unterminatred block helper #2', () {
       expect(
-          () => stubble
-              .compile('{{#multyStrings 3 2}}{{index}}. String number')({}),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (17) on 1:44 Unterminated block helper "multyStrings" at 1:15')));
+          () => stubble.compile('{{#multyStrings 3 2}}{{index}}. String number')({}),
+          throwsA(predicate(
+              (e) => e is Exception && e.toString() == 'Exception: Error (17) on 1:44 Unterminated block helper "multyStrings" at 1:15')));
     });
 
     test('Unterminatred block helper #3', () {
       expect(
           () => stubble.compile('{{#multyStrings 3 ')({}),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (17) on 1:17 Unterminated block helper "multyStrings" at 1:15')));
+          throwsA(predicate(
+              (e) => e is Exception && e.toString() == 'Exception: Error (17) on 1:17 Unterminated block helper "multyStrings" at 1:15')));
     });
 
-    test(
-        'Calling simple block helper with "ignoreTagCaseSensetive" option == true',
-        () {
+    test('Calling simple block helper with "ignoreTagCaseSensetive" option == true', () {
       stubble.setOption('ignoreTagCaseSensetive', true);
 
-      expect(
-          stubble.compile(
-              '{{#simpleBlockHelper}}{{A}}; {{B}}{{/SimpleBlockHelper}}')({}),
-          'First param; Second param');
+      expect(stubble.compile('{{#simpleBlockHelper}}{{A}}; {{B}}{{/SimpleBlockHelper}}')({}), 'First param; Second param');
 
       stubble.setOption('ignoreTagCaseSensetive', false);
     });
 
     test('Calling nested block helpers', () {
-      expect(
-          stubble.compile(
-              '{{#ABC}}My name is {{#abc}}{{name}}{{/abc}}{{/ABC}}')({}),
-          'My name is John');
+      expect(stubble.compile('{{#ABC}}My name is {{#abc}}{{name}}{{/abc}}{{/ABC}}')({}), 'My name is John');
     });
 
     test('Calling block helpers with escaped characters', () {
-      expect(stubble.compile('{{#ABC}}My name is \\!{{/ABC}}')({}),
-          'My name is !');
+      expect(stubble.compile('{{#ABC}}My name is \\!{{/ABC}}')({}), 'My name is !');
     });
   });
 
@@ -989,8 +828,7 @@ void main() {
     });
 
     test('Calling nested IF', () {
-      final tpl =
-          '{{#if A == 1}}A{{#if B == 2}}-B{{#if C == 4}}-C{{/if}}{{/if}}{{/if}}';
+      final tpl = '{{#if A == 1}}A{{#if B == 2}}-B{{#if C == 4}}-C{{/if}}{{/if}}{{/if}}';
       final res = stubble.compile(tpl)({
         'A': 1,
         'B': 2,
@@ -1005,78 +843,50 @@ void main() {
     test('Wrong IF block #1', () {
       final tpl = '{{#if !}}result{{/if}}';
 
-      expect(
-          () => stubble.compile(tpl)(null),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (10) on 1:6 Wrong attribute character "!"')));
+      expect(() => stubble.compile(tpl)(null),
+          throwsA(predicate((e) => e is Exception && e.toString() == 'Exception: Error (10) on 1:6 Wrong attribute character "!"')));
     });
 
     test('Wrong IF block #2', () {
       final tpl = '{{#if A}}result{{/if}}';
 
-      expect(
-          () => stubble.compile(tpl)(null),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (15) on 1:7 If block condition malformed')));
+      expect(() => stubble.compile(tpl)(null),
+          throwsA(predicate((e) => e is Exception && e.toString() == 'Exception: Error (15) on 1:7 If block condition malformed')));
     });
 
     test('Wrong IF block #3', () {
       final tpl = '{{#if A=}}result{{/if}}';
 
-      expect(
-          () => stubble.compile(tpl)(null),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (4) on 1:7 Character "=" is not a valid in path')));
+      expect(() => stubble.compile(tpl)(null),
+          throwsA(predicate((e) => e is Exception && e.toString() == 'Exception: Error (4) on 1:7 Character "=" is not a valid in path')));
     });
 
     test('Wrong IF block #4', () {
       final tpl = '{{#if A ==}}result{{/if}}';
 
-      expect(
-          () => stubble.compile(tpl)(null),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (15) on 1:10 If block condition malformed')));
+      expect(() => stubble.compile(tpl)(null),
+          throwsA(predicate((e) => e is Exception && e.toString() == 'Exception: Error (15) on 1:10 If block condition malformed')));
     });
 
     test('Wrong IF block #5', () {
       final tpl = '{{#if A === B}}result{{/if}}';
 
-      expect(
-          () => stubble.compile(tpl)(null),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (16) on 1:11 If block condition malformed: "==="')));
+      expect(() => stubble.compile(tpl)(null),
+          throwsA(predicate((e) => e is Exception && e.toString() == 'Exception: Error (16) on 1:11 If block condition malformed: "==="')));
     });
 
     test('Wrong IF block #6', () {
       final tpl = '{{#if A ?? B}}result{{/if}}';
 
-      expect(
-          () => stubble.compile(tpl)(null),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (10) on 1:8 Wrong condition character "?" (63)')));
+      expect(() => stubble.compile(tpl)(null),
+          throwsA(predicate((e) => e is Exception && e.toString() == 'Exception: Error (10) on 1:8 Wrong condition character "?" (63)')));
     });
 
     test('Wrong IF block #7', () {
       final tpl = '{{#if "A\' == "B"}}result{{/if}}';
 
-      expect(
-          () => stubble.compile(tpl)(null),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (10) on 1:14 Wrong condition character "B" (66)')));
+      expect(() => stubble.compile(tpl)(null),
+          throwsA(predicate((e) => e is Exception && e.toString() == 'Exception: Error (10) on 1:14 Wrong condition character "B" (66)')));
     });
 
     test('Wrong IF block #8', () {
@@ -1086,8 +896,7 @@ void main() {
           () => stubble.compile(tpl)(null),
           throwsA(predicate((e) =>
               e is Exception &&
-              e.toString() ==
-                  'Exception: Error (15) on 1:36 If block error: Exception: Error (5) on 1:3 Wrong character "&" found')));
+              e.toString() == 'Exception: Error (15) on 1:36 If block error: Exception: Error (5) on 1:3 Wrong character "&" found')));
     });
   });
 
@@ -1108,78 +917,47 @@ void main() {
     test('With block with empty path', () {
       expect(
           () => stubble.compile('{{#with}}{{fname}} {{sname}}{{/with}}')(null),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (13) on 1:36 With block required path to context data')));
+          throwsA(predicate(
+              (e) => e is Exception && e.toString() == 'Exception: Error (13) on 1:36 With block required path to context data')));
     });
 
     test('With block data of wrong type', () {
       expect(
-          () => stubble.compile('{{#with person}}{{fname}} {{sname}}{{/with}}')(
-              {'person': 'John'}),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (14) on 1:43 "With" block data should have "Map" type')));
+          () => stubble.compile('{{#with person}}{{fname}} {{sname}}{{/with}}')({'person': 'John'}),
+          throwsA(predicate(
+              (e) => e is Exception && e.toString() == 'Exception: Error (14) on 1:43 "With" block data should have "Map" type')));
     });
 
     test('With block wrong path ', () {
       expect(
-          () => stubble.compile('{{#with Person}}{{fname}} {{sname}}{{/with}}')(
-              {'person': {}}),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (7) on 1:43 Can\'t get data from context by path "Person"')));
+          () => stubble.compile('{{#with Person}}{{fname}} {{sname}}{{/with}}')({'person': {}}),
+          throwsA(predicate(
+              (e) => e is Exception && e.toString() == 'Exception: Error (7) on 1:43 Can\'t get data from context by path "Person"')));
     });
 
     test('Unterminated WITH block test #1', () {
-      expect(
-          () => stubble.compile('{{#with Person}}{{fname}} {{sname}}{{/with}')(
-              {'person': {}}),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (17) on 1:42 Unterminated "WITH" block at 1:7')));
+      expect(() => stubble.compile('{{#with Person}}{{fname}} {{sname}}{{/with}')({'person': {}}),
+          throwsA(predicate((e) => e is Exception && e.toString() == 'Exception: Error (17) on 1:42 Unterminated "WITH" block at 1:7')));
     });
 
     test('Unterminated WITH block test #2', () {
-      expect(
-          () => stubble.compile('{{#with Person}}{{fname}} {{sname}}{{/wi')(
-              {'person': {}}),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (17) on 1:39 Unterminated "WITH" block at 1:7')));
+      expect(() => stubble.compile('{{#with Person}}{{fname}} {{sname}}{{/wi')({'person': {}}),
+          throwsA(predicate((e) => e is Exception && e.toString() == 'Exception: Error (17) on 1:39 Unterminated "WITH" block at 1:7')));
     });
 
     test('Unterminated WITH block test #3', () {
-      expect(
-          () => stubble
-              .compile('{{#with Person}}{{fname}} {{sname}')({'person': {}}),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (17) on 1:33 Unterminated "WITH" block at 1:7')));
+      expect(() => stubble.compile('{{#with Person}}{{fname}} {{sname}')({'person': {}}),
+          throwsA(predicate((e) => e is Exception && e.toString() == 'Exception: Error (17) on 1:33 Unterminated "WITH" block at 1:7')));
     });
 
     test('Unterminated WITH block test #4', () {
-      expect(
-          () => stubble.compile('{{#with Person')({'person': {}}),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (17) on 1:13 Unterminated "WITH" block at 1:7')));
+      expect(() => stubble.compile('{{#with Person')({'person': {}}),
+          throwsA(predicate((e) => e is Exception && e.toString() == 'Exception: Error (17) on 1:13 Unterminated "WITH" block at 1:7')));
     });
 
     test('Unterminated WITH block test #5', () {
-      expect(
-          () => stubble.compile('{{#with Perso')({'person': {}}),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (17) on 1:12 Unterminated "WITH" block at 1:7')));
+      expect(() => stubble.compile('{{#with Perso')({'person': {}}),
+          throwsA(predicate((e) => e is Exception && e.toString() == 'Exception: Error (17) on 1:12 Unterminated "WITH" block at 1:7')));
     });
 
     test('WITH block with malformed body', () {
@@ -1188,9 +966,7 @@ void main() {
                 'Person': {'A': 21}
               }),
           throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (9) on 1:42 Exception: Error (5) on 1:13 Wrong character "&" found')));
+              e is Exception && e.toString() == 'Exception: Error (9) on 1:42 Exception: Error (5) on 1:13 Wrong character "&" found')));
     });
   });
 
@@ -1247,65 +1023,42 @@ void main() {
                   {'num': 4},
                 ]
               }),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (13) on 1:25 "EACH" block requires path as parameter')));
+          throwsA(
+              predicate((e) => e is Exception && e.toString() == 'Exception: Error (13) on 1:25 "EACH" block requires path as parameter')));
     });
 
     test('Calling EACH block with wrong param', () {
       expect(
-          () => stubble
-              .compile('{{#each A}}{{num}};{{/each}}')({'A': 'some string'}),
+          () => stubble.compile('{{#each A}}{{num}};{{/each}}')({'A': 'some string'}),
           throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (14) on 1:27 "each" block data should have "List" or "Map" type')));
+              e is Exception && e.toString() == 'Exception: Error (14) on 1:27 "each" block data should have "List" or "Map" type')));
     });
 
     test('Calling EACH block with absent param', () {
       expect(
           () => stubble.compile('{{#each B}}{{num}};{{/each}}')({'A': []}),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (7) on 1:27 Can\'t get data from context by path "B"')));
+          throwsA(
+              predicate((e) => e is Exception && e.toString() == 'Exception: Error (7) on 1:27 Can\'t get data from context by path "B"')));
     });
 
     test('Calling unterminated EACH block test #1', () {
-      expect(
-          () => stubble.compile('{{#each B}}{{num}};{{/each}')({'A': []}),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (17) on 1:26 Unterminated "EACH" block at 1:7')));
+      expect(() => stubble.compile('{{#each B}}{{num}};{{/each}')({'A': []}),
+          throwsA(predicate((e) => e is Exception && e.toString() == 'Exception: Error (17) on 1:26 Unterminated "EACH" block at 1:7')));
     });
 
     test('Calling unterminated EACH block test #2', () {
-      expect(
-          () => stubble.compile('{{#each B}}{{num}};{{/')({'A': []}),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (17) on 1:21 Unterminated "EACH" block at 1:7')));
+      expect(() => stubble.compile('{{#each B}}{{num}};{{/')({'A': []}),
+          throwsA(predicate((e) => e is Exception && e.toString() == 'Exception: Error (17) on 1:21 Unterminated "EACH" block at 1:7')));
     });
 
     test('Calling unterminated EACH block test #3', () {
-      expect(
-          () => stubble.compile('{{#each B}}{{num}}')({'A': []}),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (17) on 1:17 Unterminated "EACH" block at 1:7')));
+      expect(() => stubble.compile('{{#each B}}{{num}}')({'A': []}),
+          throwsA(predicate((e) => e is Exception && e.toString() == 'Exception: Error (17) on 1:17 Unterminated "EACH" block at 1:7')));
     });
 
     test('Calling unterminated EACH block test #4', () {
-      expect(
-          () => stubble.compile('{{#each B')({'A': []}),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (17) on 1:8 Unterminated "EACH" block at 1:7')));
+      expect(() => stubble.compile('{{#each B')({'A': []}),
+          throwsA(predicate((e) => e is Exception && e.toString() == 'Exception: Error (17) on 1:8 Unterminated "EACH" block at 1:7')));
     });
 
     test('Calling malformed EACH block', () {
@@ -1318,9 +1071,7 @@ void main() {
                 ]
               }),
           throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (9) on 1:29 Exception: Error (5) on 1:3 Wrong character "!" found')));
+              e is Exception && e.toString() == 'Exception: Error (9) on 1:29 Exception: Error (5) on 1:3 Wrong character "!" found')));
     });
   });
 
@@ -1339,55 +1090,37 @@ void main() {
     test('GetBlockNameState EOS', () {
       expect(
           () => stubble.compile('{{#eac')({}),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (20) on 1:5 block name error: unexpected end of source')));
+          throwsA(predicate(
+              (e) => e is Exception && e.toString() == 'Exception: Error (20) on 1:5 block name error: unexpected end of source')));
     });
 
     test('GetConditionState EOS', () {
       expect(
           () => stubble.compile('{{#if A =')({}),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (20) on 1:8 IF condition error: unexpected end of source')));
+          throwsA(predicate(
+              (e) => e is Exception && e.toString() == 'Exception: Error (20) on 1:8 IF condition error: unexpected end of source')));
     });
 
     test('GetDataState EOS', () {
-      expect(
-          () => stubble.compile('{{adf')({}),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (20) on 1:4 unexpected end of source')));
+      expect(() => stubble.compile('{{adf')({}),
+          throwsA(predicate((e) => e is Exception && e.toString() == 'Exception: Error (20) on 1:4 unexpected end of source')));
     });
 
     test('GetIfBlockState EOS', () {
-      expect(
-          () => stubble.compile('{{#if ')({}),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (17) on 1:5 Unterminated "IF" block at 1:5')));
+      expect(() => stubble.compile('{{#if ')({}),
+          throwsA(predicate((e) => e is Exception && e.toString() == 'Exception: Error (17) on 1:5 Unterminated "IF" block at 1:5')));
     });
 
     test('GetIfConditionState EOS', () {
       expect(
           () => stubble.compile('{{#if A ==')({}),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (20) on 1:9 IF condition error: unexpected end of source')));
+          throwsA(predicate(
+              (e) => e is Exception && e.toString() == 'Exception: Error (20) on 1:9 IF condition error: unexpected end of source')));
     });
 
     test('GetIfConditionState EOS', () {
-      expect(
-          () => stubble.compile('{{#if A == ')({}),
-          throwsA(predicate((e) =>
-              e is Exception &&
-              e.toString() ==
-                  'Exception: Error (20) on 1:10 unexpected end of source')));
+      expect(() => stubble.compile('{{#if A == ')({}),
+          throwsA(predicate((e) => e is Exception && e.toString() == 'Exception: Error (20) on 1:10 unexpected end of source')));
     });
   });
 }
