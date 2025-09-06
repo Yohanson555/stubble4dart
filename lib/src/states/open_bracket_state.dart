@@ -18,12 +18,11 @@ class OpenBracketState extends StubbleState {
           charCode: charCode,
           type: notifySecondOpenBracketFound,
         );
-
         break;
       default:
-        res.err = StubbleError(
-            code: errorCharNotAOpenBracket,
-            text: 'Wrong character is given. Expected "{"');
+        res.pop = true;
+        res.result = '{';
+        res.message = ProcessMessage(charCode: charCode);
     }
 
     return res;

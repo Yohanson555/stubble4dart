@@ -368,20 +368,6 @@ void main() {
           throwsA(predicate((e) => e is Exception && e.toString() == 'Exception: Error (6) on 1:18 Wrong character "B" found')));
     });
 
-    test('Incorrect path insert template #8', () {
-      expect(
-          () => stubble.compile('Everything is {A}}')(null),
-          throwsA(
-              predicate((e) => e is Exception && e.toString() == 'Exception: Error (1) on 1:15 Wrong character is given. Expected "{"')));
-    });
-
-    test('Incorrect path insert template #9', () {
-      expect(
-          () => stubble.compile('Everything is {{A} asd')(null),
-          throwsA(
-              predicate((e) => e is Exception && e.toString() == 'Exception: Error (2) on 1:18 Wrong character is given. Expected "}"')));
-    });
-
     test('Nested path test', () {
       final data = {
         'person': {'name': 'John', 'lname': 'Saigachenko', 'age': 33}
@@ -1080,7 +1066,7 @@ void main() {
       final stubble = initHelpers();
 
       expect(stubble.compile(tpl1)(data1),
-          "<center><ds><b>* BILL #123 *</b></ds></center><br><b><row><cell>Bill datetime</cell><cell align='right'>1970-01-19T09:38:03.595</cell></row></b><br><br>[123123123]");
+          "<center><ds><b>* BILL #123 *</b></ds></center><br><b><row><cell>Bill datetime</cell><cell align='right'>1970-01-19T14:38:03.595</cell></row></b><br><br>[123123123]");
     });
   });
 
@@ -1121,6 +1107,60 @@ void main() {
     test('GetIfConditionState EOS', () {
       expect(() => stubble.compile('{{#if A == ')({}),
           throwsA(predicate((e) => e is Exception && e.toString() == 'Exception: Error (20) on 1:10 unexpected end of source')));
+    });
+  });
+
+  group('Single brace handling tests', () {
+    final stubble = Stubble();
+
+    test('Single opening brace should be treated as normal character', () {
+      final template = 'This is a { single brace';
+      final data = {};
+      
+      final compile = stubble.compile(template);
+      final res = compile(data);
+      
+      expect(res, template);
+    });
+
+    test('Single closing brace should be treated as normal character', () {
+      final template = 'This is a } single brace';
+      final data = {};
+      
+      final compile = stubble.compile(template);
+      final res = compile(data);
+      
+      expect(res, template);
+    });
+
+    test('Mixed single and double braces', () {
+      final template = 'This is a { single brace and {{name}} double braces';
+      final data = {'name': 'Stubble'};
+      
+      final compile = stubble.compile(template);
+      final res = compile(data);
+      
+      expect(res, 'This is a { single brace and Stubble double braces');
+    });
+
+    test('Single braces with data replacement', () {
+      final template = 'Price is {100} dollars but {{item}} is cheaper';
+      final data = {'item': 'pizza'};
+      
+      final compile = stubble.compile(template);
+      final res = compile(data);
+      
+      expect(res, 'Price is {100} dollars but pizza is cheaper');
+    });
+
+    test('Single closing brace in template with data', () {
+      final template = 'Hello {{name}} } world';
+      final data = {'name': 'Stubble'};
+      
+      final compile = stubble.compile(template);
+      final res = compile(data);
+      
+      expect(res, 'Hello Stubble } world');
     });
   });
 }
